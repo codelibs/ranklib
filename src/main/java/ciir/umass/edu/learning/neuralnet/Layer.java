@@ -74,7 +74,7 @@ public class Layer {
 
     /**
      * [Only for output layers] Compute delta for all neurons in the this (output) layer
-     * @param targetValues
+     * @param param
      */
     public void computeDelta(final PropParameter param) {
         for (int i = 0; i < neurons.size(); i++) {

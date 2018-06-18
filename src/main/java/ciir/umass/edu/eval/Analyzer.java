@@ -80,7 +80,7 @@ public class Analyzer {
     /**
      * Read performance (in some measure of effectiveness) file. Expecting: id [space]* metric-text [space]* performance
      * @param filename
-     * @return Mapping from ranklist-id --> performance
+     * @return Mapping from ranklist-id --&gt; performance
      */
     public Map<String, Double> read(final String filename) {
         final Map<String, Double> performance = new HashMap<>();

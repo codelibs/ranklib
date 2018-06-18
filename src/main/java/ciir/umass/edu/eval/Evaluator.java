@@ -674,7 +674,7 @@ public class Evaluator {
     }
 
     /**
-     * Evaluate the currently selected ranking algorithm using <training data, validation data, testing data and the defined features>.
+     * Evaluate the currently selected ranking algorithm using &lt;training data, validation data, testing data and the defined features&gt;.
      * @param trainFile
      * @param validationFile
      * @param testFile
@@ -792,7 +792,7 @@ public class Evaluator {
     }
 
     /**
-     * Evaluate the currently selected ranking algorithm using <data, defined features> with k-fold cross validation.
+     * Evaluate the currently selected ranking algorithm using &lt;data, defined features&gt; with k-fold cross validation.
      * @param sampleFile
      * @param featureDefFile
      * @param nFold
@@ -805,7 +805,7 @@ public class Evaluator {
     }
 
     /**
-     * Evaluate the currently selected ranking algorithm using <data, defined features> with k-fold cross validation.
+     * Evaluate the currently selected ranking algorithm using &lt;data, defined features&gt; with k-fold cross validation.
      * @param sampleFile
      * @param featureDefFile
      * @param nFold

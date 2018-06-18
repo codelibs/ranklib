@@ -92,7 +92,7 @@ public class Neuron {
 
     /**
      * Compute delta for neurons in the output layer. ONLY for neurons in the output layer.
-     * @param targetValue
+     * @param param
      */
     public void computeDelta(final PropParameter param) {
         /*double pij = (double) (1.0 / (1.0 + Math.exp(-(prev_output-output))));

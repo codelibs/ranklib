@@ -32,7 +32,7 @@ public class FeatureStats {
     /**
      * Define the saved model file to be used.
      *
-     * @param   model file name
+     * @param modelFileName  model file name
      */
     protected FeatureStats(final String modelFileName) {
         this.f = new File(modelFileName);

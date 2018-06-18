@@ -39,7 +39,7 @@ public class BestAtKScorer extends MetricScorer {
     /**
      * Return the position of the best object (e.g. docs with highest degree of relevance) among objects in the range [0..k]
      * NOTE: If you want best-at-k (i.e. best among top-k), you need maxToK(rl, k-1)
-     * @param l The rank list.
+     * @param rl The rank list.
      * @param k The last position of the range.
      * @return The index of the best object in the specified range.
      */
