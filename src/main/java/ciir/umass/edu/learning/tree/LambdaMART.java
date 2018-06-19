@@ -9,8 +9,6 @@
 
 package ciir.umass.edu.learning.tree;
 
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -20,9 +18,9 @@ import ciir.umass.edu.learning.DataPoint;
 import ciir.umass.edu.learning.RankList;
 import ciir.umass.edu.learning.Ranker;
 import ciir.umass.edu.metric.MetricScorer;
+import ciir.umass.edu.parsing.ModelLineProducer;
 import ciir.umass.edu.utilities.MergeSorter;
 import ciir.umass.edu.utilities.MyThreadPool;
-import ciir.umass.edu.utilities.RankLibError;
 import ciir.umass.edu.utilities.SimpleMath;
 
 /**
@@ -57,6 +55,7 @@ public class LambdaMART extends Ranker {
     protected FeatureHistogram hist = null;
     protected double[] pseudoResponses = null;//different for each iteration
     protected double[] weights = null;//different for each iteration
+    protected double[] impacts = null; // accumulated impact of each feature
 
     public LambdaMART() {
     }
@@ -78,6 +77,7 @@ public class LambdaMART extends Ranker {
         martSamples = new DataPoint[dpCount];
         modelScores = new double[dpCount];
         pseudoResponses = new double[dpCount];
+        impacts = new double[features.length];
         weights = new double[dpCount];
         for (int i = 0; i < samples.size(); i++) {
             final RankList rl = samples.get(i);
@@ -159,7 +159,7 @@ public class LambdaMART extends Ranker {
 
         //compute the feature histogram (this is used to speed up the procedure of finding the best tree split later on)
         hist = new FeatureHistogram();
-        hist.construct(martSamples, pseudoResponses, sortedIdx, features, thresholds);
+        hist.construct(martSamples, pseudoResponses, sortedIdx, features, thresholds, impacts);
         //we no longer need the sorted indexes of samples
         sortedIdx = null;
 
@@ -258,6 +258,12 @@ public class LambdaMART extends Ranker {
             bestScoreOnValidationData = scorer.score(rank(validationSamples));
             logger.info(() -> scorer.name() + " on validation data: " + SimpleMath.round(bestScoreOnValidationData, 4));
         }
+
+        logger.info(() -> "-- FEATURE IMPACTS");
+        final int ftrsSorted[] = MergeSorter.sort(this.impacts, false);
+        for (final int ftr : ftrsSorted) {
+            logger.info(() -> " Feature " + features[ftr] + " reduced error " + impacts[ftr]);
+        }
     }
 
     @Override
@@ -290,23 +296,11 @@ public class LambdaMART extends Ranker {
 
     @Override
     public void loadFromString(final String fullText) {
-        try (final BufferedReader in = new BufferedReader(new StringReader(fullText))) {
-            String content = "";
-            final StringBuilder model = new StringBuilder(1000);
-            while ((content = in.readLine()) != null) {
-                content = content.trim();
-                if (content.length() == 0 || content.indexOf("##") == 0) {
-                    continue;
-                }
-                //actual model component
-                model.append(content);
-            }
-            //load the ensemble
-            ensemble = new Ensemble(model.toString());
-            features = ensemble.getFeatures();
-        } catch (final Exception ex) {
-            throw RankLibError.create("Error in LambdaMART::load(): ", ex);
-        }
+        final ModelLineProducer lineByLine = new ModelLineProducer();
+        lineByLine.parse(fullText, (model, endEns) -> {});
+        //load the ensemble
+        ensemble = new Ensemble(lineByLine.getModel().toString());
+        features = ensemble.getFeatures();
     }
 
     @Override

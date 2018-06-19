@@ -26,12 +26,14 @@ public class FeatureHistogram {
         int featureIdx = -1;
         int thresholdIdx = -1;
         double S = -1;
+        double errReduced = -1;
     }
 
     //Parameter
     public static float samplingRate = 1;
 
     //Variables
+    public float[] accumFeatureImpact = null;
     public int[] features = null;
     public float[][] thresholds = null;
     public double[][] sum = null;
@@ -39,6 +41,7 @@ public class FeatureHistogram {
     public double sqSumResponse = 0;
     public int[][] count = null;
     public int[][] sampleToThresholdMap = null;
+    public double[] impacts;
 
     //whether to re-use its parents @sum and @count instead of cleaning up the parent and re-allocate for the children.
     //@sum and @count of any intermediate tree node (except for root) can be re-used.
@@ -49,9 +52,10 @@ public class FeatureHistogram {
     }
 
     public void construct(final DataPoint[] samples, final double[] labels, final int[][] sampleSortedIdx, final int[] features,
-            final float[][] thresholds) {
+            final float[][] thresholds, final double[] impacts) {
         this.features = features;
         this.thresholds = thresholds;
+        this.impacts = impacts;
 
         sumResponse = 0;
         sqSumResponse = 0;
@@ -144,6 +148,7 @@ public class FeatureHistogram {
     public void construct(final FeatureHistogram parent, final int[] soi, final double[] labels) {
         this.features = parent.features;
         this.thresholds = parent.thresholds;
+        this.impacts = parent.impacts;
         sumResponse = 0;
         sqSumResponse = 0;
         sum = new double[features.length][];
@@ -193,6 +198,7 @@ public class FeatureHistogram {
         this.reuseParent = reuseParent;
         this.features = parent.features;
         this.thresholds = parent.thresholds;
+        this.impacts = parent.impacts;
         sumResponse = parent.sumResponse - leftSibling.sumResponse;
         sqSumResponse = parent.sqSumResponse - leftSibling.sqSumResponse;
 
@@ -245,10 +251,12 @@ public class FeatureHistogram {
                 final double sumRight = sumResponse - sumLeft;
 
                 final double S = sumLeft * sumLeft / countLeft + sumRight * sumRight / countRight;
+                final double errST = (sqSumResponse / totalCount) * (S / totalCount);
                 if (cfg.S < S) {
                     cfg.S = S;
                     cfg.featureIdx = i;
                     cfg.thresholdIdx = t;
+                    cfg.errReduced = errST;
                 }
             }
         }
@@ -307,13 +315,14 @@ public class FeatureHistogram {
         //if(minS >= sp.getDeviance())
         //return null;
 
-        final double[] sumLabel = sum[best.featureIdx];
+        // bestFeaturesHist is the best features
+        final double[] bestFeaturesHist = sum[best.featureIdx];
         final int[] sampleCount = count[best.featureIdx];
 
-        final double s = sumLabel[sumLabel.length - 1];
-        final int c = sampleCount[sumLabel.length - 1];
+        final double s = bestFeaturesHist[bestFeaturesHist.length - 1];
+        final int c = sampleCount[bestFeaturesHist.length - 1];
 
-        final double sumLeft = sumLabel[best.thresholdIdx];
+        final double sumLeft = bestFeaturesHist[best.thresholdIdx];
         final int countLeft = sampleCount[best.thresholdIdx];
 
         final double sumRight = s - sumLeft;

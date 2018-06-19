@@ -183,13 +183,13 @@ public class LinearRegRank extends Ranker {
      */
     protected double[] solve(final double[][] A, final double[] B) {
         if (A.length == 0 || B.length == 0) {
-            RankLibError.create("Error: some of the input arrays is empty.");
+            throw RankLibError.create("Error: some of the input arrays is empty.");
         }
         if (A[0].length == 0) {
-            RankLibError.create("Error: some of the input arrays is empty.");
+            throw RankLibError.create("Error: some of the input arrays is empty.");
         }
         if (A.length != B.length) {
-            RankLibError.create("Error: Solving Ax=B: A and B have different dimension.");
+            throw RankLibError.create("Error: Solving Ax=B: A and B have different dimension.");
         }
 
         //init
@@ -200,7 +200,7 @@ public class LinearRegRank extends Ranker {
             a[i] = new double[A[i].length];
             if (i > 0) {
                 if (a[i].length != a[i - 1].length) {
-                    RankLibError.create("Error: Solving Ax=B: A is NOT a square matrix.");
+                    throw RankLibError.create("Error: Solving Ax=B: A is NOT a square matrix.");
                 }
             }
             System.arraycopy(A[i], 0, a[i], 0, A[i].length);

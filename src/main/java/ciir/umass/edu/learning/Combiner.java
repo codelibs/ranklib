@@ -12,7 +12,6 @@ package ciir.umass.edu.learning;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
-import java.util.logging.Logger;
 
 import ciir.umass.edu.learning.tree.Ensemble;
 import ciir.umass.edu.learning.tree.RFRanker;
@@ -20,7 +19,6 @@ import ciir.umass.edu.utilities.FileUtils;
 import ciir.umass.edu.utilities.RankLibError;
 
 public class Combiner {
-    private static final Logger logger = Logger.getLogger(Combiner.class.getName());
 
     public static void main(final String[] args) {
         final Combiner c = new Combiner();

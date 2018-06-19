@@ -44,6 +44,7 @@ public class FeatureManager {
 
         int nFold = 0;
         float tvs = -1;//train-validation split in each fold
+        float tts = -1;//train-test validation split of the whole dataset
         final int argsLen = args.length;
 
         if ((argsLen < 3) && !Arrays.asList(args).contains("-feature_stats")
@@ -61,6 +62,8 @@ public class FeatureManager {
             logger.info(() -> "  [+] k-fold Partitioning (sequential split)");
             logger.info(() -> "\t-k <fold>\t\tThe number of folds");
             logger.info(() -> "\t[ -tvs <x \\in [0..1]> ] Train-validation split ratio (x)(1.0-x)");
+            logger.info(() -> "  [+] Train-test split");
+            logger.info(() -> "\t-tts <x \\in [0..1]> ] Train-test split ratio (x)(1.0-x)");
 
             logger.info(
                     () -> "  NOTE: If both -shuffle and -k are specified, the input data will be shuffled and then sequentially partitioned.");
@@ -82,6 +85,8 @@ public class FeatureManager {
                 shuffle = true;
             } else if (args[i].equalsIgnoreCase("-tvs")) {
                 tvs = Float.parseFloat(args[++i]);
+            } else if (args[i].equalsIgnoreCase("-tts")) {
+                tts = Float.parseFloat(args[++i]);
             } else if (args[i].equalsIgnoreCase("-output")) {
                 outputDir = FileUtils.makePathStandard(args[++i]);
             } else if (args[i].equalsIgnoreCase("-feature_stats")) {
@@ -90,7 +95,12 @@ public class FeatureManager {
             }
         }
 
-        if (shuffle || nFold > 0) {
+        if (nFold > 0 && tts != -1) {
+            logger.info(() -> "Error: Only one of k or tts should be specified.");
+            return;
+        }
+
+        if (shuffle || nFold > 0 || tts != -1) {
             final List<RankList> samples = readInput(rankingFiles);
 
             if (samples.isEmpty()) {
@@ -106,6 +116,22 @@ public class FeatureManager {
                 Collections.shuffle(samples);
                 logger.info(() -> "Saving... ");
                 FeatureManager.save(samples, outputDir + fn);
+            }
+
+            if (tts != -1) {
+                final List<RankList> trains = new ArrayList<>();
+                final List<RankList> tests = new ArrayList<>();
+
+                logger.info(() -> "Splitting... ");
+                prepareSplit(samples, tts, trains, tests);
+
+                try {
+                    logger.info(() -> "Saving splits...");
+                    save(trains, outputDir + "train." + fn);
+                    save(tests, outputDir + "test." + fn);
+                } catch (final Exception ex) {
+                    throw RankLibError.create("Cannot save partition data.\n" + "Occured in FeatureManager::main(): ", ex);
+                }
             }
 
             if (nFold > 0) {

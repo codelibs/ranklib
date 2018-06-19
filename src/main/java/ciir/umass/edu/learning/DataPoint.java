@@ -69,7 +69,7 @@ public abstract class DataPoint {
             final String[] fs = text.split("\\s+");
             label = Float.parseFloat(fs[0]);
             if (label < 0) {
-                RankLibError.create("Relevance label cannot be negative. System will now exit.");
+                throw RankLibError.create("Relevance label cannot be negative. System will now exit.");
             }
             id = getValue(fs[1]);
             String key = "";

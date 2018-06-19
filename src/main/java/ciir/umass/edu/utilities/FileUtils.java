@@ -9,6 +9,8 @@
 
 package ciir.umass.edu.utilities;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,8 +22,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * This class provides some file processing utilities such as read/write files, obtain files in a
@@ -30,7 +32,6 @@ import java.util.zip.GZIPInputStream;
  * @version 1.3 (July 29, 2008)
  */
 public class FileUtils {
-    private static final Logger logger = Logger.getLogger(FileUtils.class.getName());
 
     public static BufferedReader smartReader(final String inputFile) throws IOException {
         return smartReader(inputFile, "UTF-8");
@@ -123,9 +124,112 @@ public class FileUtils {
         return files;
     }
 
+    /**
+     * Test whether a file/directory exists.
+     * @param file the file/directory to test.
+     * @return TRUE if exists; FALSE otherwise.
+     */
+    public static boolean exists(final String file) {
+        final File f = new File(file);
+        return f.exists();
+    }
+
+    /**
+     * Copy a file.
+     * @param srcFile The source file.
+     * @param dstFile The copied file.
+     */
+    public static void copyFile(final String srcFile, final String dstFile) {
+        try (FileInputStream fis = new FileInputStream(new File(srcFile)); FileOutputStream fos = new FileOutputStream(new File(dstFile))) {
+            final byte[] buf = new byte[40960];
+            int i = 0;
+            while ((i = fis.read(buf)) != -1) {
+                fos.write(buf, 0, i);
+            }
+        } catch (final IOException e) {
+            throw RankLibError.create("Error in FileUtils.copyFile: ", e);
+        }
+    }
+
+    /**
+     * Copy all files in the source directory to the target directory.
+     * @param srcDir The source directory.
+     * @param dstDir The target directory.
+     * @param files The files to be copied. NOTE THAT this list contains only names (WITHOUT PATH).
+     */
+    public static void copyFiles(final String srcDir, final String dstDir, final List<String> files) {
+        for (final String file : files) {
+            FileUtils.copyFile(srcDir + file, dstDir + file);
+        }
+    }
+
+    public static final int BUF_SIZE = 51200;
+
+    /**
+     * Gunzip an input file.
+     * @param file_input    Input file to gunzip.
+     * @param dir_output    Output directory to contain the ungzipped file (whose name = file_input - ".gz")
+     * @return 1 if succeed
+     */
+    public static int gunzipFile(final File file_input, final File dir_output) {
+        // Use the name of the archive for the output file name but
+        // with ".gz" stripped off.
+        final String file_input_name = file_input.getName();
+        final String file_output_name = file_input_name.substring(0, file_input_name.length() - 3);
+
+        // Create the decompressed output file.
+        final File output_file = new File(dir_output, file_output_name);
+
+        // Decompress the gzipped file by reading it via
+        // the GZIP input stream. Will need a buffer.
+        final byte[] input_buffer = new byte[BUF_SIZE];
+        int len = 0;
+
+        try (GZIPInputStream gzip_in_stream = new GZIPInputStream(new BufferedInputStream(new FileInputStream(file_input)));
+                BufferedOutputStream destination = new BufferedOutputStream(new FileOutputStream(output_file), BUF_SIZE)) {
+
+            //Now read from the gzip stream, which will decompress the data,
+            //and write to the output stream.
+            while ((len = gzip_in_stream.read(input_buffer, 0, BUF_SIZE)) != -1) {
+                destination.write(input_buffer, 0, len);
+            }
+            destination.flush(); // Insure that all data is written to the output.
+
+        } catch (final IOException e) {
+            throw RankLibError.create("Error in gunzipFile(): " + e.toString(), e);
+        }
+        return 1;
+    }
+
+    /**
+     * Gzip an input file.
+     * @param inputFile The input file to gzip.
+     * @param gzipFilename The gunzipped file's name.
+     * @return 1 if succeeds
+     */
+    public static int gzipFile(final String inputFile, final String gzipFilename) {
+        try (FileInputStream in = new FileInputStream(inputFile);
+                GZIPOutputStream out = new GZIPOutputStream(new FileOutputStream(gzipFilename))) {
+
+            // Transfer bytes from the input file
+            // to the gzip output stream
+            final byte[] buf = new byte[BUF_SIZE];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+
+            // Finish creation of gzip file
+            out.finish();
+        } catch (final Exception ex) {
+            throw RankLibError.create(ex);
+        }
+        return 1;
+    }
+
     public static String getFileName(final String pathName) {
-        final int idx1 = pathName.lastIndexOf("/");
-        final int idx2 = pathName.lastIndexOf("\\");
+        final int idx1 = pathName.lastIndexOf('/');
+        final int idx2 = pathName.lastIndexOf('\\');
         final int idx = (idx1 > idx2) ? idx1 : idx2;
         return pathName.substring(idx + 1);
     }
@@ -141,4 +245,5 @@ public class FileUtils {
         }
         return dir;
     }
+
 }

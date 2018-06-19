@@ -384,7 +384,7 @@ public class CoorAscent extends Ranker {
     public void copyModel(final CoorAscent ranker) {
         weight = new double[features.length];
         if (ranker.weight.length != weight.length) {
-            RankLibError.create("These two models use different feature set!!");
+            throw RankLibError.create("These two models use different feature set!!");
         }
         copy(ranker.weight, weight);
         logger.info(() -> "Model loaded.");

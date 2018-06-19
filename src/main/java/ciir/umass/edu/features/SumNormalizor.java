@@ -22,7 +22,7 @@ public class SumNormalizor extends Normalizer {
     @Override
     public void normalize(final RankList rl) {
         if (rl.size() == 0) {
-            RankLibError.create("Error in SumNormalizor::normalize(): The input ranked list is empty");
+            throw RankLibError.create("Error in SumNormalizor::normalize(): The input ranked list is empty");
         }
         final int nFeature = DataPoint.getFeatureCount();
         final double[] norm = new double[nFeature];
@@ -46,7 +46,7 @@ public class SumNormalizor extends Normalizer {
     @Override
     public void normalize(final RankList rl, int[] fids) {
         if (rl.size() == 0) {
-            RankLibError.create("Error in SumNormalizor::normalize(): The input ranked list is empty");
+            throw RankLibError.create("Error in SumNormalizor::normalize(): The input ranked list is empty");
         }
 
         //remove duplicate features from the input @fids ==> avoid normalizing the same features multiple times

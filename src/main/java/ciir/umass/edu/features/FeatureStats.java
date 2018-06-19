@@ -142,7 +142,7 @@ public class FeatureStats {
 
             //- There should be a model name in the file or something is screwy.
             if (modelName == null) {
-                RankLibError.create("No model name defined.  Quitting.");
+                throw RankLibError.create("No model name defined.  Quitting.");
             }
 
             //- Can't do feature statistics on models that make use of every feature as it is

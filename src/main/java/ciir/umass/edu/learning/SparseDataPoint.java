@@ -114,7 +114,7 @@ public class SparseDataPoint extends DataPoint {
         if (pos >= 0) {
             fVals[pos] = fval;
         } else {
-            RankLibError.create("Error in SparseDataPoint::setFeatureValue(): feature (id=" + fid + ") not found.");
+            throw RankLibError.create("Error in SparseDataPoint::setFeatureValue(): feature (id=" + fid + ") not found.");
         }
     }
 
