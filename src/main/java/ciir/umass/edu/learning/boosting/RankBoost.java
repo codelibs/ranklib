@@ -296,8 +296,8 @@ public class RankBoost extends Ranker {
                 sweight[i] = D_t;
             }
 
-            printLog(new int[] { 7, 8, 9, 9 },
-                    new String[] { t + "", wr.getFid() + "", SimpleMath.round(wr.getThreshold(), 4) + "", SimpleMath.round(R_t, 4) + "" });
+            printLog(new int[] { 7, 8, 9, 9 }, new String[] { Integer.toString(t), Integer.toString(wr.getFid()),
+                    Double.toString(SimpleMath.round(wr.getThreshold(), 4)), Double.toString(SimpleMath.round(R_t, 4)) });
             if (t % 1 == 0) {
                 printLog(new int[] { 9 }, new String[] { SimpleMath.round(scorer.score(rank(samples)), 4) + "" });
                 if (validationSamples != null) {

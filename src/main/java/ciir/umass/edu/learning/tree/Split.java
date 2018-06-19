@@ -130,27 +130,28 @@ public class Split {
     }
 
     public String toString(final String indent) {
-        String strOutput = indent + "<split>" + "\n";
-        strOutput += getString(indent + "\t");
-        strOutput += indent + "</split>" + "\n";
-        return strOutput;
+        final StringBuilder buf = new StringBuilder(100);
+        buf.append(indent).append("<split>\n");
+        buf.append(getString(indent + "\t"));
+        buf.append(indent).append("</split>\n");
+        return buf.toString();
     }
 
     public String getString(final String indent) {
-        String strOutput = "";
+        final StringBuilder buf = new StringBuilder(100);
         if (featureID == -1) {
-            strOutput += indent + "<output> " + avgLabel + " </output>" + "\n";
+            buf.append(indent).append("<output>").append(avgLabel).append(" </output>\n");
         } else {
-            strOutput += indent + "<feature> " + featureID + " </feature>" + "\n";
-            strOutput += indent + "<threshold> " + threshold + " </threshold>" + "\n";
-            strOutput += indent + "<split pos=\"left\">" + "\n";
-            strOutput += left.getString(indent + "\t");
-            strOutput += indent + "</split>" + "\n";
-            strOutput += indent + "<split pos=\"right\">" + "\n";
-            strOutput += right.getString(indent + "\t");
-            strOutput += indent + "</split>" + "\n";
+            buf.append(indent).append("<feature>").append(featureID).append(" </feature>\n");
+            buf.append(indent).append("<threshold> ").append(threshold).append(" </threshold>\n");
+            buf.append(indent).append("<split pos=\"left\">\n");
+            buf.append(left.getString(indent + "\t"));
+            buf.append(indent).append("</split>" + "\n");
+            buf.append(indent).append("<split pos=\"right\">\n");
+            buf.append(right.getString(indent + "\t"));
+            buf.append(indent + "</split>\n");
         }
-        return strOutput;
+        return buf.toString();
     }
 
     //Internal functions(ONLY used during learning)

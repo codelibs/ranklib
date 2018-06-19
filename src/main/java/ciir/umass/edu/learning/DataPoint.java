@@ -21,10 +21,10 @@ import ciir.umass.edu.utilities.RankLibError;
  */
 public abstract class DataPoint {
     public static boolean missingZero = false;
-    public static final int FEATURE_INCREASE = 10;
+    protected static final int FEATURE_INCREASE = 10;
     protected int featureCount = 0;
 
-    protected static float UNKNOWN = Float.NaN;
+    protected static final float UNKNOWN = Float.NaN;
 
     //attributes
     protected float label = 0.0f;//[ground truth] the real label of the data point (e.g. its degree of relevance according to the relevance judgment)

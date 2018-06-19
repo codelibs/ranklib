@@ -6,8 +6,8 @@ import ciir.umass.edu.utilities.RankLibError;
  * Created by doug on 5/24/17.
  */
 public class ModelLineProducer {
-    private static int CARRIAGE_RETURN = 13;
-    private static int LINE_FEED = 10;
+    private static final int CARRIAGE_RETURN = 13;
+    private static final int LINE_FEED = 10;
 
     private final StringBuilder model = new StringBuilder(1000);
 
@@ -58,9 +58,7 @@ public class ModelLineProducer {
                             eolCursor--;
                         }
 
-                        final boolean ens = readUntil(fullTextChar, beginOfLineCursor, eolCursor, model);
-
-                        modelConsumer.nextLine(model, ens);
+                        modelConsumer.nextLine(model, readUntil(fullTextChar, beginOfLineCursor, eolCursor, model));
                     }
 
                     // readahead this new line up to the next space
@@ -72,9 +70,7 @@ public class ModelLineProducer {
                 }
             }
 
-            final boolean ens = readUntil(fullTextChar, beginOfLineCursor, fullTextChar.length - 1, model);
-
-            modelConsumer.nextLine(model, ens);
+            modelConsumer.nextLine(model, readUntil(fullTextChar, beginOfLineCursor, fullTextChar.length - 1, model));
 
         } catch (final Exception ex) {
             throw RankLibError.create("Error in model loading ", ex);

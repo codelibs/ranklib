@@ -24,7 +24,7 @@ public class SparseDataPoint extends DataPoint {
     // Access pattern of the feature values
     private enum accessPattern {
         SEQUENTIAL, RANDOM
-    };
+    }
 
     private static accessPattern searchPattern = accessPattern.RANDOM;
 

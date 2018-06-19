@@ -30,33 +30,23 @@ import ciir.umass.edu.utilities.RankLibError;
  * @author vdang
  */
 public class Ensemble {
-    protected List<RegressionTree> trees = null;
-    protected List<Float> weights = null;
+    protected List<RegressionTree> trees = new ArrayList<>();
+    protected List<Float> weights = new ArrayList<>();
     protected int[] features = null;
 
     public Ensemble() {
-        trees = new ArrayList<>();
-        weights = new ArrayList<>();
     }
 
     public Ensemble(final Ensemble e) {
-        trees = new ArrayList<>();
-        weights = new ArrayList<>();
         trees.addAll(e.trees);
         weights.addAll(e.weights);
     }
 
     public Ensemble(final String xmlRep) {
-        try {
-            trees = new ArrayList<>();
-            weights = new ArrayList<>();
+        try (final InputStream in = new ByteArrayInputStream(xmlRep.getBytes("UTF-8"))) {
             final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            final byte[] xmlDATA = xmlRep.getBytes();
-            final Document doc;
-            try (final InputStream in = new ByteArrayInputStream(xmlDATA)) {
-                doc = dBuilder.parse(in);
-            }
+            final Document doc = dBuilder.parse(in);
             final NodeList nl = doc.getElementsByTagName("tree");
             final Map<Integer, Integer> fids = new HashMap<>();
             for (int i = 0; i < nl.getLength(); i++) {
@@ -127,14 +117,16 @@ public class Ensemble {
 
     @Override
     public String toString() {
-        String strRep = "<ensemble>" + "\n";
+        final StringBuilder buf = new StringBuilder(1000);
+        buf.append("<ensemble>\n");
         for (int i = 0; i < trees.size(); i++) {
-            strRep += "\t<tree id=\"" + (i + 1) + "\" weight=\"" + weights.get(i) + "\">" + "\n";
-            strRep += trees.get(i).toString("\t\t");
-            strRep += "\t</tree>" + "\n";
+            buf.append("\t<tree id=\"").append(Integer.toString(i + 1)).append("\" weight=\"").append(Float.toString(weights.get(i)))
+                    .append("\">\n");
+            buf.append(trees.get(i).toString("\t\t"));
+            buf.append("\t</tree>\n");
         }
-        strRep += "</ensemble>" + "\n";
-        return strRep;
+        buf.append("</ensemble>\n");
+        return buf.toString();
     }
 
     public int[] getFeatures() {
