@@ -395,7 +395,7 @@ public class RankBoost extends Ranker {
             rWeight = new ArrayList<>();
             wRankers = new ArrayList<>();
 
-            final int idx = content.lastIndexOf("#");
+            final int idx = content.lastIndexOf('#');
             if (idx != -1) {
                 content = content.substring(0, idx).trim();//remove the comment part at the end of the line
             }

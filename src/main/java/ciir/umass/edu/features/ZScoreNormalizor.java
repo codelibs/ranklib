@@ -24,7 +24,7 @@ public class ZScoreNormalizor extends Normalizer {
         if (rl.size() == 0) {
             throw RankLibError.create("Error in ZScoreNormalizor::normalize(): The input ranked list is empty");
         }
-        final int nFeature = DataPoint.getFeatureCount();
+        final int nFeature = rl.getFeatureCount();
         final double[] means = new double[nFeature];
         Arrays.fill(means, 0);
         for (int i = 0; i < rl.size(); i++) {

@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import ciir.umass.edu.learning.boosting.AdaRank;
@@ -37,19 +38,23 @@ public class RankerFactory {
 
     protected Ranker[] rFactory = new Ranker[] { new MART(), new RankBoost(), new RankNet(), new AdaRank(), new CoorAscent(),
             new LambdaRank(), new LambdaMART(), new ListNet(), new RFRanker(), new LinearRegRank() };
-    protected static HashMap<String, RankerType> map = new HashMap<>();
+    protected Map<String, String> map = new HashMap<>();
 
     public RankerFactory() {
-        map.put(createRanker(RankerType.MART).name().toUpperCase(), RankerType.MART);
-        map.put(createRanker(RankerType.RANKNET).name().toUpperCase(), RankerType.RANKNET);
-        map.put(createRanker(RankerType.RANKBOOST).name().toUpperCase(), RankerType.RANKBOOST);
-        map.put(createRanker(RankerType.ADARANK).name().toUpperCase(), RankerType.ADARANK);
-        map.put(createRanker(RankerType.COOR_ASCENT).name().toUpperCase(), RankerType.COOR_ASCENT);
-        map.put(createRanker(RankerType.LAMBDARANK).name().toUpperCase(), RankerType.LAMBDARANK);
-        map.put(createRanker(RankerType.LAMBDAMART).name().toUpperCase(), RankerType.LAMBDAMART);
-        map.put(createRanker(RankerType.LISTNET).name().toUpperCase(), RankerType.LISTNET);
-        map.put(createRanker(RankerType.RANDOM_FOREST).name().toUpperCase(), RankerType.RANDOM_FOREST);
-        map.put(createRanker(RankerType.LINEAR_REGRESSION).name().toUpperCase(), RankerType.LINEAR_REGRESSION);
+        map.put(createRanker(RankerType.MART).name().toUpperCase(), RankerType.MART.name());
+        map.put(createRanker(RankerType.RANKNET).name().toUpperCase(), RankerType.RANKNET.name());
+        map.put(createRanker(RankerType.RANKBOOST).name().toUpperCase(), RankerType.RANKBOOST.name());
+        map.put(createRanker(RankerType.ADARANK).name().toUpperCase(), RankerType.ADARANK.name());
+        map.put(createRanker(RankerType.COOR_ASCENT).name().toUpperCase(), RankerType.COOR_ASCENT.name());
+        map.put(createRanker(RankerType.LAMBDARANK).name().toUpperCase(), RankerType.LAMBDARANK.name());
+        map.put(createRanker(RankerType.LAMBDAMART).name().toUpperCase(), RankerType.LAMBDAMART.name());
+        map.put(createRanker(RankerType.LISTNET).name().toUpperCase(), RankerType.LISTNET.name());
+        map.put(createRanker(RankerType.RANDOM_FOREST).name().toUpperCase(), RankerType.RANDOM_FOREST.name());
+        map.put(createRanker(RankerType.LINEAR_REGRESSION).name().toUpperCase(), RankerType.LINEAR_REGRESSION.name());
+    }
+
+    public void register(final String name, final String className) {
+        map.put(name, className);
     }
 
     public Ranker createRanker(final RankerType type) {
@@ -65,6 +70,13 @@ public class RankerFactory {
     }
 
     public Ranker createRanker(final String className) {
+        try {
+            final RankerType rankerType = RankerType.valueOf(className);
+            return createRanker(rankerType);
+        } catch (final Exception e) {
+            // ignore
+        }
+
         Ranker r = null;
         try {
             @SuppressWarnings("unchecked")

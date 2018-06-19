@@ -122,17 +122,20 @@ public abstract class Ranker {
 
     protected void printLog(final int[] len, final String[] msgs) {
         if (logger.isLoggable(Level.INFO)) {
+            final StringBuilder buf = new StringBuilder();
             for (int i = 0; i < msgs.length; i++) {
-                String msg = msgs[i];
+                final String msg = msgs[i];
                 if (msg.length() > len[i]) {
-                    msg = msg.substring(0, len[i]);
+                    buf.append(msg.substring(0, len[i]));
                 } else {
-                    while (msg.length() < len[i]) {
-                        msg += " ";
+                    buf.append(msg);
+                    for (int j = len[i] - msg.length(); j > 0; j--) {
+                        buf.append(' ');
                     }
                 }
-                logger.info(msg + " | ");
+                buf.append(" | ");
             }
+            logger.info(buf.toString());
         }
     }
 

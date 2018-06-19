@@ -22,11 +22,14 @@ public class RankList {
 
     protected DataPoint[] rl = null;
 
+    protected int featureCount = 0;
+
     public RankList(final List<DataPoint> rl) {
         this.rl = new DataPoint[rl.size()];
         for (int i = 0; i < rl.size(); i++) {
             this.rl[i] = rl.get(i);
         }
+        init();
     }
 
     public RankList(final RankList rl) {
@@ -34,6 +37,7 @@ public class RankList {
         for (int i = 0; i < rl.size(); i++) {
             this.rl[i] = rl.get(i);
         }
+        init();
     }
 
     public RankList(final RankList rl, final int[] idx) {
@@ -41,12 +45,23 @@ public class RankList {
         for (int i = 0; i < idx.length; i++) {
             this.rl[i] = rl.get(idx[i]);
         }
+        init();
     }
 
     public RankList(final RankList rl, final int[] idx, final int offset) {
         this.rl = new DataPoint[rl.size()];
         for (int i = 0; i < idx.length; i++) {
             this.rl[i] = rl.get(idx[i] - offset);
+        }
+        init();
+    }
+
+    protected void init() {
+        for (final DataPoint dp : this.rl) {
+            final int c = dp.getFeatureCount();
+            if (c > featureCount) {
+                featureCount = c;
+            }
         }
     }
 
@@ -82,5 +97,9 @@ public class RankList {
         }
         final int[] idx = Sorter.sort(score, false);
         return new RankList(this, idx);
+    }
+
+    public int getFeatureCount() {
+        return featureCount;
     }
 }

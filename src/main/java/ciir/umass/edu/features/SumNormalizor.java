@@ -24,7 +24,7 @@ public class SumNormalizor extends Normalizer {
         if (rl.size() == 0) {
             throw RankLibError.create("Error in SumNormalizor::normalize(): The input ranked list is empty");
         }
-        final int nFeature = DataPoint.getFeatureCount();
+        final int nFeature = rl.getFeatureCount();
         final double[] norm = new double[nFeature];
         Arrays.fill(norm, 0);
         for (int i = 0; i < rl.size(); i++) {

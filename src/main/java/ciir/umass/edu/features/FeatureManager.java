@@ -202,7 +202,7 @@ public class FeatureManager {
                     continue;
                 }
 
-                if (content.indexOf("#") == 0) {
+                if (content.indexOf('#') == 0) {
                     continue;
                 }
 
@@ -278,7 +278,7 @@ public class FeatureManager {
             while ((content = in.readLine()) != null) {
                 content = content.trim();
 
-                if (content.length() == 0 || content.indexOf("#") == 0) {
+                if (content.length() == 0 || content.indexOf('#') == 0) {
                     continue;
                 }
 
@@ -309,7 +309,13 @@ public class FeatureManager {
             throw RankLibError.create("Error in FeatureManager::getFeatureFromSampleVector(): There are no training samples.");
         }
 
-        final int fc = DataPoint.getFeatureCount();
+        int fc = 0;
+        for (final RankList rl : samples) {
+            final int c = rl.getFeatureCount();
+            if (c > fc) {
+                fc = c;
+            }
+        }
         final int[] features = new int[fc];
 
         for (int i = 1; i <= fc; i++) {

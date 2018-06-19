@@ -21,9 +21,8 @@ import ciir.umass.edu.utilities.RankLibError;
  */
 public abstract class DataPoint {
     public static boolean missingZero = false;
-    public static int MAX_FEATURE = 51;
-    public static int FEATURE_INCREASE = 10;
-    protected static int featureCount = 0;
+    public static final int FEATURE_INCREASE = 10;
+    protected int featureCount = 0;
 
     protected static float UNKNOWN = Float.NaN;
 
@@ -44,11 +43,11 @@ public abstract class DataPoint {
     }
 
     protected static String getKey(final String pair) {
-        return pair.substring(0, pair.indexOf(":"));
+        return pair.substring(0, pair.indexOf(':'));
     }
 
     protected static String getValue(final String pair) {
-        return pair.substring(pair.lastIndexOf(":") + 1);
+        return pair.substring(pair.lastIndexOf(':') + 1);
     }
 
     /**
@@ -57,11 +56,12 @@ public abstract class DataPoint {
      * @return Dense array of feature values
      */
     protected float[] parse(String text) {
-        float[] fVals = new float[MAX_FEATURE];
+        int maxFeature = 51;
+        float[] fVals = new float[maxFeature];
         Arrays.fill(fVals, UNKNOWN);
         int lastFeature = -1;
         try {
-            final int idx = text.indexOf("#");
+            final int idx = text.indexOf('#');
             if (idx != -1) {
                 description = text.substring(idx);
                 text = text.substring(0, idx).trim();//remove the comment part at the end of the line
@@ -72,23 +72,21 @@ public abstract class DataPoint {
                 throw RankLibError.create("Relevance label cannot be negative. System will now exit.");
             }
             id = getValue(fs[1]);
-            String key = "";
-            String val = "";
             for (int i = 2; i < fs.length; i++) {
                 knownFeatures++;
-                key = getKey(fs[i]);
-                val = getValue(fs[i]);
+                final String key = getKey(fs[i]);
+                final String val = getValue(fs[i]);
                 final int f = Integer.parseInt(key);
                 if (f <= 0) {
                     throw RankLibError.create("Cannot use feature numbering less than or equal to zero. Start your features at 1.");
                 }
-                if (f >= MAX_FEATURE) {
-                    while (f >= MAX_FEATURE) {
-                        MAX_FEATURE += FEATURE_INCREASE;
+                if (f >= maxFeature) {
+                    while (f >= maxFeature) {
+                        maxFeature += FEATURE_INCREASE;
                     }
-                    final float[] tmp = new float[MAX_FEATURE];
+                    final float[] tmp = new float[maxFeature];
                     System.arraycopy(fVals, 0, tmp, 0, fVals.length);
-                    Arrays.fill(tmp, fVals.length, MAX_FEATURE, UNKNOWN);
+                    Arrays.fill(tmp, fVals.length, maxFeature, UNKNOWN);
                     fVals = tmp;
                 }
                 fVals[f] = Float.parseFloat(val);
@@ -186,7 +184,6 @@ public abstract class DataPoint {
 
     public void resetCached() {
         cached = -100000000.0f;
-        ;
     }
 
     @Override
@@ -202,7 +199,7 @@ public abstract class DataPoint {
         return output;
     }
 
-    public static int getFeatureCount() {
+    public int getFeatureCount() {
         return featureCount;
     }
 }

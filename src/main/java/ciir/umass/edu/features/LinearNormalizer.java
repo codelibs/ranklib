@@ -24,7 +24,7 @@ public class LinearNormalizer extends Normalizer {
         if (rl.size() == 0) {
             throw RankLibError.create("Error in LinearNormalizor::normalize(): The input ranked list is empty");
         }
-        final int nFeature = DataPoint.getFeatureCount();
+        final int nFeature = rl.getFeatureCount();
         final int[] fids = new int[nFeature];
         for (int i = 1; i <= nFeature; i++) {
             fids[i - 1] = i;
