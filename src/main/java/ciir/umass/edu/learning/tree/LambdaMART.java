@@ -238,6 +238,7 @@ public class LambdaMART extends Ranker {
                     bestModelOnValidation = ensemble.treeCount() - 1;
                 }
             }
+            flushLog();
 
             //Should we stop early?
             if (m - bestModelOnValidation > nRoundToStopEarly) {

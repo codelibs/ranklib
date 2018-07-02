@@ -108,7 +108,7 @@ public class RankerFactory {
     public Ranker loadRankerFromString(final String fullText) {
         try (BufferedReader in = new BufferedReader(new StringReader(fullText))) {
             final String content = in.readLine().replace("## ", "").trim();//read the first line to get the name of the ranking algorithm
-            logger.info(() -> "Model:\t\t" + content);
+            logger.info(() -> "Model: " + content);
             final Ranker r = createRanker(map.get(content.toUpperCase()));
             r.loadFromString(fullText);
             return r;

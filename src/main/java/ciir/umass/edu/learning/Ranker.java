@@ -43,6 +43,7 @@ public abstract class Ranker {
     protected double bestScoreOnValidationData = 0.0;
 
     protected List<RankList> validationSamples = null;
+    protected StringBuilder logBuf = new StringBuilder(1000);
 
     protected Ranker() {
 
@@ -122,25 +123,35 @@ public abstract class Ranker {
 
     protected void printLog(final int[] len, final String[] msgs) {
         if (logger.isLoggable(Level.INFO)) {
-            final StringBuilder buf = new StringBuilder();
             for (int i = 0; i < msgs.length; i++) {
                 final String msg = msgs[i];
                 if (msg.length() > len[i]) {
-                    buf.append(msg.substring(0, len[i]));
+                    logBuf.append(msg.substring(0, len[i]));
                 } else {
-                    buf.append(msg);
+                    logBuf.append(msg);
                     for (int j = len[i] - msg.length(); j > 0; j--) {
-                        buf.append(' ');
+                        logBuf.append(' ');
                     }
                 }
-                buf.append(" | ");
+                logBuf.append(" | ");
             }
-            logger.info(buf.toString());
         }
     }
 
     protected void printLogLn(final int[] len, final String[] msgs) {
-        printLog(len, msgs);
+        if (logger.isLoggable(Level.INFO)) {
+            printLog(len, msgs);
+            flushLog();
+        }
+    }
+
+    protected void flushLog() {
+        if (logger.isLoggable(Level.INFO)) {
+            if (logBuf.length() > 0) {
+                logger.info(logBuf.toString());
+                logBuf.setLength(0);
+            }
+        }
     }
 
     protected void copy(final double[] source, final double[] target) {
