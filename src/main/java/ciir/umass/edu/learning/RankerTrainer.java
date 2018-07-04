@@ -32,7 +32,6 @@ public class RankerTrainer {
         ranker.init();
         ranker.learn();
         trainingTime = System.nanoTime() - start;
-        //printTrainingTime();
         return ranker;
     }
 
@@ -44,7 +43,6 @@ public class RankerTrainer {
         ranker.init();
         ranker.learn();
         trainingTime = System.nanoTime() - start;
-        //printTrainingTime();
         return ranker;
     }
 

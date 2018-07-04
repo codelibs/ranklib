@@ -18,6 +18,9 @@ public class SimpleMath {
     private static double LOG10 = Math.log(10);
     private static double LOGE = Math.log(Math.E);
 
+    private SimpleMath() {
+    }
+
     public static double logBase2(final double value) {
         return Math.log(value) / LOG2;
     }

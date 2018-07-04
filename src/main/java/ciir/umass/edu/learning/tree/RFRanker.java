@@ -79,10 +79,7 @@ public class RFRanker extends Ranker {
             final Sampler sp = new Sampler();
             //create a "bag" of samples by random sampling from the training set
             final List<RankList> bag = sp.doSampling(samples, subSamplingRate, true);
-            //"out-of-bag" samples
-            //List<RankList> outOfBag = sp.getRemains();
             final LambdaMART r = (LambdaMART) rf.createRanker(rType, bag, features, scorer);
-            //r.setValidationSet(outOfBag);
 
             r.init();
             r.learn();
@@ -94,7 +91,6 @@ public class RFRanker extends Ranker {
                     impacts[ftr] += r.impacts[ftr];
                 }
             }
-            //logger.info(()->new int[]{9, 9, 11}, new String[]{"b["+(i+1)+"]", SimpleMath.round(r.getScoreOnTrainingData(), 4)+"", SimpleMath.round(r.getScoreOnValidationData(), 4)+""});
             printLogLn(new int[] { 9, 9 }, new String[] { "b[" + (i + 1) + "]", SimpleMath.round(r.getScoreOnTrainingData(), 4) + "" });
             ensembles[i] = r.getEnsemble();
         }

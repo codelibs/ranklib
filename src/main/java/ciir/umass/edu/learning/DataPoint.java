@@ -57,8 +57,8 @@ public abstract class DataPoint {
      */
     protected float[] parse(String text) {
         int maxFeature = 51;
-        float[] fVals = new float[maxFeature];
-        Arrays.fill(fVals, UNKNOWN);
+        float[] fval = new float[maxFeature];
+        Arrays.fill(fval, UNKNOWN);
         int lastFeature = -1;
         try {
             final int idx = text.indexOf('#');
@@ -85,11 +85,11 @@ public abstract class DataPoint {
                         maxFeature += FEATURE_INCREASE;
                     }
                     final float[] tmp = new float[maxFeature];
-                    System.arraycopy(fVals, 0, tmp, 0, fVals.length);
-                    Arrays.fill(tmp, fVals.length, maxFeature, UNKNOWN);
-                    fVals = tmp;
+                    System.arraycopy(fval, 0, tmp, 0, fval.length);
+                    Arrays.fill(tmp, fval.length, maxFeature, UNKNOWN);
+                    fval = tmp;
                 }
-                fVals[f] = Float.parseFloat(val);
+                fval[f] = Float.parseFloat(val);
 
                 if (f > featureCount) {
                     featureCount = f;
@@ -101,12 +101,12 @@ public abstract class DataPoint {
             }
             //shrink fVals
             final float[] tmp = new float[lastFeature + 1];
-            System.arraycopy(fVals, 0, tmp, 0, lastFeature + 1);
-            fVals = tmp;
+            System.arraycopy(fval, 0, tmp, 0, lastFeature + 1);
+            fval = tmp;
         } catch (final Exception ex) {
             throw RankLibError.create("Error in DataPoint::parse()", ex);
         }
-        return fVals;
+        return fval;
     }
 
     /**
@@ -144,8 +144,7 @@ public abstract class DataPoint {
     * @param text
     */
     protected DataPoint(final String text) {
-        final float[] fVals = parse(text);
-        setFeatureVector(fVals);
+        setFeatureVector(parse(text));
     }
 
     public String getID() {
@@ -169,7 +168,6 @@ public abstract class DataPoint {
     }
 
     public void setDescription(final String description) {
-        assert (description.contains("#"));
         this.description = description;
     }
 
@@ -188,15 +186,16 @@ public abstract class DataPoint {
 
     @Override
     public String toString() {
-        final float[] fVals = getFeatureVector();
-        String output = ((int) label) + " " + "qid:" + id + " ";
-        for (int i = 1; i < fVals.length; i++) {
-            if (!isUnknown(fVals[i])) {
-                output += i + ":" + fVals[i] + ((i == fVals.length - 1) ? "" : " ");
+        final float[] fval = getFeatureVector();
+        final StringBuilder output = new StringBuilder();
+        output.append(((int) label) + " " + "qid:" + id + " ");
+        for (int i = 1; i < fval.length; i++) {
+            if (!isUnknown(fval[i])) {
+                output.append(i + ":" + fval[i] + ((i == fval.length - 1) ? "" : " "));
             }
         }
-        output += " " + description;
-        return output;
+        output.append(" " + description);
+        return output.toString();
     }
 
     public int getFeatureCount() {

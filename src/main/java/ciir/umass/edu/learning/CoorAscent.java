@@ -132,7 +132,6 @@ public class CoorAscent extends Ranker {
                             if (regularized) {
                                 final double penalty = slack * getDistance(weight, regVector);
                                 score -= penalty;
-                                //logger.info(()->"Penalty: " + penalty);
                             }
                             if (score > bestScore)//better than the local best, replace the local best with this model
                             {
@@ -242,25 +241,26 @@ public class CoorAscent extends Ranker {
 
     @Override
     public String toString() {
-        String output = "";
+        final StringBuilder output = new StringBuilder();
         for (int i = 0; i < weight.length; i++) {
-            output += features[i] + ":" + weight[i] + ((i == weight.length - 1) ? "" : " ");
+            output.append(features[i] + ":" + weight[i] + ((i == weight.length - 1) ? "" : " "));
         }
-        return output;
+        return output.toString();
     }
 
     @Override
     public String model() {
-        String output = "## " + name() + "\n";
-        output += "## Restart = " + nRestart + "\n";
-        output += "## MaxIteration = " + nMaxIteration + "\n";
-        output += "## StepBase = " + stepBase + "\n";
-        output += "## StepScale = " + stepScale + "\n";
-        output += "## Tolerance = " + tolerance + "\n";
-        output += "## Regularized = " + regularized + "\n";
-        output += "## Slack = " + slack + "\n";
-        output += toString();
-        return output;
+        final StringBuilder output = new StringBuilder();
+        output.append("## " + name() + "\n");
+        output.append("## Restart = " + nRestart + "\n");
+        output.append("## MaxIteration = " + nMaxIteration + "\n");
+        output.append("## StepBase = " + stepBase + "\n");
+        output.append("## StepScale = " + stepScale + "\n");
+        output.append("## Tolerance = " + tolerance + "\n");
+        output.append("## Regularized = " + regularized + "\n");
+        output.append("## Slack = " + slack + "\n");
+        output.append(toString());
+        return output.toString();
     }
 
     @Override

@@ -107,20 +107,6 @@ public class RankNet extends Ranker {
                 connect(0, inputLayer.size() - 1, i, j);
             }
         }
-
-        //initialize weights
-        /*Random random = new Random();
-        for(int i=1;i<layers.size();i++)
-        {
-        	for(int j=0;j<layers.get(i).size();j++)
-        	{
-        		Neuron n = layers.get(i).get(j);
-        		int s = n.getInLinks().size();
-        		double b = Math.sqrt(3.0/s);//if weight is drawn from Uniform(-b, b) ==> the standard deviation of weights will be 1.0/sqrt(m)
-        		for(int k=0;k<s;k++)
-        			n.getInLinks().get(k).setWeight(b*random.nextDouble()*(random.nextInt(2)==0?1:-1));
-        	}
-        }*/
     }
 
     protected void connect(final int sourceLayer, final int sourceNeuron, final int targetLayer, final int targetNeuron) {
@@ -164,17 +150,6 @@ public class RankNet extends Ranker {
                     pairMap[i][k++] = j;
                 }
             }
-
-            /*int count = 0;
-            for(int j=i+1;j<rl.size();j++)
-            	if(rl.get(i).getLabel() > rl.get(j).getLabel())
-            		count++;
-            
-            pairMap[i] = new int[count];
-            int k=0;
-            for(int j=i+1;j<rl.size();j++)
-            	if(rl.get(i).getLabel() > rl.get(j).getLabel())
-            		pairMap[i][k++] = j;*/
         }
         return pairMap;
     }
@@ -249,8 +224,7 @@ public class RankNet extends Ranker {
 
     protected double crossEntropy(final double o1, final double o2, final double targetValue) {
         final double oij = o1 - o2;
-        final double ce = -targetValue * oij + SimpleMath.logBase2(1 + Math.exp(oij));
-        return ce;
+        return -targetValue * oij + SimpleMath.logBase2(1 + Math.exp(oij));
     }
 
     protected void estimateLoss() {
@@ -273,7 +247,6 @@ public class RankNet extends Ranker {
         }
         error = SimpleMath.round(error / totalPairs, 4);
 
-        //if(error > lastError)
         //Neuron.learningRate *= 0.8;
         lastError = error;
     }
@@ -328,22 +301,21 @@ public class RankNet extends Ranker {
                 clearNeuronOutputs();
             }
 
-            //printWeightVector();
             scoreOnTrainingData = scorer.score(rank(samples));
             estimateLoss();
-            printLog(new int[] { 7, 14 }, new String[] { i + "", SimpleMath.round(((double) misorderedPairs) / totalPairs, 4) + "" });
-            //logger.info(()->new int[]{7, 14}, new String[]{i+"", SimpleMath.round(Neuron.learningRate, 9)+""});
+            printLog(new int[] { 7, 14 }, new String[] { Integer.toString(i), Double.toString(SimpleMath.round(((double) misorderedPairs) / totalPairs, 4)) });
             if (i % 1 == 0) {
-                printLog(new int[] { 9 }, new String[] { SimpleMath.round(scoreOnTrainingData, 4) + "" });
+                printLog(new int[] { 9 }, new String[] { Double.toString(SimpleMath.round(scoreOnTrainingData, 4)) });
                 if (validationSamples != null) {
                     final double score = scorer.score(rank(validationSamples));
                     if (score > bestScoreOnValidationData) {
                         bestScoreOnValidationData = score;
                         saveBestModelOnValidation();
                     }
-                    printLog(new int[] { 9 }, new String[] { SimpleMath.round(score, 4) + "" });
+                    printLog(new int[] { 9 }, new String[] { Double.toString(SimpleMath.round(score, 4)) });
                 }
             }
+            flushLog();
         }
 
         //if validation data is specified ==> best model on this data has been saved
@@ -383,59 +355,57 @@ public class RankNet extends Ranker {
 
     @Override
     public String toString() {
-        String output = "";
+        final StringBuilder output = new StringBuilder();
         for (int i = 0; i < layers.size() - 1; i++)//loop through all layers
         {
             for (int j = 0; j < layers.get(i).size(); j++)//loop through all neurons on in the current layer
             {
-                output += i + " " + j + " ";
+                output.append(i + " " + j + " ");
                 final Neuron n = layers.get(i).get(j);
                 for (int k = 0; k < n.getOutLinks().size(); k++) {
-                    output += n.getOutLinks().get(k).getWeight() + ((k == n.getOutLinks().size() - 1) ? "" : " ");
+                    output.append(n.getOutLinks().get(k).getWeight() + ((k == n.getOutLinks().size() - 1) ? "" : " "));
                 }
-                output += "\n";
+                output.append('\n');
             }
         }
-        return output;
+        return output.toString();
     }
 
     @Override
     public String model() {
-        String output = "## " + name() + "\n";
-        output += "## Epochs = " + nIteration + "\n";
-        output += "## No. of features = " + features.length + "\n";
-        output += "## No. of hidden layers = " + (layers.size() - 2) + "\n";
+        final StringBuilder output = new StringBuilder();
+        output.append("## " + name() + "\n");
+        output.append("## Epochs = " + nIteration + "\n");
+        output.append("## No. of features = " + features.length + "\n");
+        output.append("## No. of hidden layers = " + (layers.size() - 2) + "\n");
         for (int i = 1; i < layers.size() - 1; i++) {
-            output += "## Layer " + i + ": " + layers.get(i).size() + " neurons\n";
+            output.append("## Layer " + i + ": " + layers.get(i).size() + " neurons\n");
         }
 
         //print used features
         for (int i = 0; i < features.length; i++) {
-            output += features[i] + ((i == features.length - 1) ? "" : " ");
+            output.append(features[i] + ((i == features.length - 1) ? "" : " "));
         }
-        output += "\n";
+        output.append('\n');
         //print network information
-        output += layers.size() - 2 + "\n";//[# hidden layers]
+        output.append(layers.size() - 2 + "\n");//[# hidden layers]
         for (int i = 1; i < layers.size() - 1; i++) {
-            output += layers.get(i).size() + "\n";//[#neurons]
+            output.append(layers.get(i).size() + "\n");//[#neurons]
         }
         //print learned weights
-        output += toString();
-        return output;
+        output.append(toString());
+        return output.toString();
     }
 
     @Override
     public void loadFromString(final String fullText) {
         try (final BufferedReader in = new BufferedReader(new StringReader(fullText))) {
-            String content = "";
+            String content = null;
 
             final List<String> l = new ArrayList<>();
             while ((content = in.readLine()) != null) {
                 content = content.trim();
-                if (content.length() == 0) {
-                    continue;
-                }
-                if (content.indexOf("##") == 0) {
+                if (content.length() == 0 || content.indexOf("##") == 0) {
                     continue;
                 }
                 l.add(content);
@@ -448,16 +418,16 @@ public class RankNet extends Ranker {
                 features[i] = Integer.parseInt(tmp[i]);
             }
             //the 2nd line is a scalar indicating the number of hidden layers
-            final int nHiddenLayer = Integer.parseInt(l.get(1));
-            final int[] nn = new int[nHiddenLayer];
+            final int nhl = Integer.parseInt(l.get(1));
+            final int[] nn = new int[nhl];
             //the next @nHiddenLayer lines contain the number of neurons in each layer
             int i = 2;
-            for (; i < 2 + nHiddenLayer; i++) {
+            for (; i < 2 + nhl; i++) {
                 nn[i - 2] = Integer.parseInt(l.get(i));
             }
             //create the network
             setInputOutput(features.length, 1);
-            for (int j = 0; j < nHiddenLayer; j++) {
+            for (int j = 0; j < nhl; j++) {
                 addHiddenLayer(nn[j]);
             }
             wire();

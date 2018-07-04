@@ -50,11 +50,11 @@ public class ExpressionEvaluator {
 
         @Override
         public String toString() {
-            String output = "";
+            final StringBuilder output = new StringBuilder();
             for (int i = 0; i < l.size(); i++) {
-                output += l.get(i) + " ";
+                output.append(l.get(i)).append(' ');
             }
-            return output.trim();
+            return output.toString().trim();
         }
     }
 
@@ -80,11 +80,11 @@ public class ExpressionEvaluator {
 
         @Override
         public String toString() {
-            String output = "";
+            final StringBuilder output = new StringBuilder();
             for (int i = l.size() - 1; i >= 0; i--) {
-                output += l.get(i) + " ";
+                output.append(l.get(i)).append(' ');
             }
-            return output.trim();
+            return output.toString().trim();
         }
     }
 

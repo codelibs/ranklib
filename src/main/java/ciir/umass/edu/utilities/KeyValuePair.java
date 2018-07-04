@@ -17,8 +17,8 @@ import java.util.List;
  */
 public class KeyValuePair {
 
-    protected List<String> keys = new ArrayList<>();;
-    protected List<String> values = new ArrayList<>();;
+    protected List<String> keys = new ArrayList<>();
+    protected List<String> values = new ArrayList<>();
 
     public KeyValuePair(String text) {
         try {
@@ -30,7 +30,7 @@ public class KeyValuePair {
             final String[] fs = text.split(" ");
             for (int i = 0; i < fs.length; i++) {
                 fs[i] = fs[i].trim();
-                if (fs[i].compareTo("") == 0) {
+                if (fs[i].isEmpty()) {
                     continue;
                 }
                 keys.add(getKey(fs[i]));

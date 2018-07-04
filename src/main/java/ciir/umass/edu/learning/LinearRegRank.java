@@ -47,9 +47,6 @@ public class LinearRegRank extends Ranker {
 
         //closed form solution: beta = ((xTx - lambda*I)^(-1)) * (xTy)
         //where x is an n-by-f matrix (n=#data-points, f=#features), y is an n-element vector of relevance labels
-        /*int nSample = 0;
-        for(int i=0;i<samples.size();i++)
-        	nSample += samples.get(i).size();*/
         int nVar = 0;
         for (final RankList rl : samples) {
             final int c = rl.getFeatureCount();

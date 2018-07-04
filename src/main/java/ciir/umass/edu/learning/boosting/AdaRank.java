@@ -75,11 +75,7 @@ public class AdaRank extends Ranker {
         double bestScore = -1.0;
         WeakRanker bestWR = null;
         for (final int i : features) {
-            if (featureQueue.contains(i)) {
-                continue;
-            }
-
-            if (usedFeatures.get(i) != null) {
+            if (featureQueue.contains(i) || usedFeatures.get(i) != null) {
                 continue;
             }
 
@@ -101,7 +97,7 @@ public class AdaRank extends Ranker {
     private int learn(final int startIteration, final boolean withEnqueue) {
         int t = startIteration;
         for (; t <= nIteration; t++) {
-            printLog(new int[] { 7 }, new String[] { t + "" });
+            printLog(new int[] { 7 }, new String[] { Integer.toString(t) });
 
             final WeakRanker bestWR = learnWeakRanker();
             if (bestWR == null) {
@@ -119,7 +115,7 @@ public class AdaRank extends Ranker {
                     copy(backupSampleWeight, sweight);
                     bestScoreOnValidationData = 0.0;//no best model just yet
                     lastTrainedScore = backupTrainScore;
-                    printLogLn(new int[] { 8, 9, 9, 9 }, new String[] { bestWR.getFID() + "", "", "", "ROLLBACK" });
+                    printLogLn(new int[] { 8, 9, 9, 9 }, new String[] { Integer.toString(bestWR.getFID()), "", "", "ROLLBACK" });
                     continue;
                 } else {
                     lastFeature = bestWR.getFID();
@@ -177,17 +173,18 @@ public class AdaRank extends Ranker {
                 lastFeature = bestWR.getFID();
             }
 
-            printLog(new int[] { 8, 9, }, new String[] { bestWR.getFID() + "", SimpleMath.round(trainedScore, 4) + "" });
+            printLog(new int[] { 8, 9, }, new String[] { Integer.toString(bestWR.getFID()), Double.toString(SimpleMath.round(trainedScore, 4)) });
             if (t % 1 == 0 && validationSamples != null) {
                 final double scoreOnValidation = scorer.score(rank(validationSamples));
                 if (scoreOnValidation > bestScoreOnValidationData) {
                     bestScoreOnValidationData = scoreOnValidation;
                     updateBestModelOnValidation();
                 }
-                printLog(new int[] { 9, 9 }, new String[] { SimpleMath.round(scoreOnValidation, 4) + "", status });
+                printLog(new int[] { 9, 9 }, new String[] { Double.toString(SimpleMath.round(scoreOnValidation, 4)), status });
             } else {
                 printLog(new int[] { 9, 9 }, new String[] { "", status });
             }
+            flushLog();
 
             if (delta <= 0)//stop criteria met
             {
@@ -280,28 +277,29 @@ public class AdaRank extends Ranker {
 
     @Override
     public String toString() {
-        String output = "";
+        final StringBuilder output = new StringBuilder();
         for (int i = 0; i < rankers.size(); i++) {
-            output += rankers.get(i).getFID() + ":" + rweight.get(i) + ((i == rankers.size() - 1) ? "" : " ");
+            output.append(rankers.get(i).getFID() + ":" + rweight.get(i) + ((i == rankers.size() - 1) ? "" : " "));
         }
-        return output;
+        return output.toString();
     }
 
     @Override
     public String model() {
-        String output = "## " + name() + "\n";
-        output += "## Iteration = " + nIteration + "\n";
-        output += "## Train with enqueue: " + ((trainWithEnqueue) ? "Yes" : "No") + "\n";
-        output += "## Tolerance = " + tolerance + "\n";
-        output += "## Max consecutive selection count = " + maxSelCount + "\n";
-        output += toString();
-        return output;
+        final StringBuilder output = new StringBuilder();
+        output.append("## " + name() + "\n");
+        output.append("## Iteration = " + nIteration + "\n");
+        output.append("## Train with enqueue: " + ((trainWithEnqueue) ? "Yes" : "No") + "\n");
+        output.append("## Tolerance = " + tolerance + "\n");
+        output.append("## Max consecutive selection count = " + maxSelCount + "\n");
+        output.append(toString());
+        return output.toString();
     }
 
     @Override
     public void loadFromString(final String fullText) {
         try (BufferedReader in = new BufferedReader(new StringReader(fullText))) {
-            String content = "";
+            String content = null;
 
             KeyValuePair kvp = null;
             while ((content = in.readLine()) != null) {

@@ -312,9 +312,6 @@ public class FeatureHistogram {
             return false;
         }
 
-        //if(minS >= sp.getDeviance())
-        //return null;
-
         // bestFeaturesHist is the best features
         final double[] bestFeaturesHist = sum[best.featureIdx];
         final int[] sampleCount = count[best.featureIdx];
@@ -450,7 +447,6 @@ public class FeatureHistogram {
             //find best split (type == 0)
             wk.usedFeatures = usedFeatures;
             wk.minLeafSup = minLeafSup;
-            //wk.cfg = cfg;
 
             //update (type = 1)
             wk.labels = labels;

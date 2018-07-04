@@ -198,11 +198,7 @@ public class FeatureManager {
 
             while ((content = in.readLine()) != null) {
                 content = content.trim();
-                if (content.length() == 0) {
-                    continue;
-                }
-
-                if (content.indexOf('#') == 0) {
+                if (content.length() == 0 || content.indexOf('#') == 0) {
                     continue;
                 }
 
@@ -218,7 +214,7 @@ public class FeatureManager {
                     qp = new DenseDataPoint(content);
                 }
 
-                if (lastID.compareTo("") != 0 && lastID.compareTo(qp.getID()) != 0) {
+                if (!lastID.isEmpty() && lastID.compareTo(qp.getID()) != 0) {
                     if (!mustHaveRelDoc || hasRel) {
                         samples.add(new RankList(rl));
                     }

@@ -11,8 +11,8 @@ package ciir.umass.edu.learning.neuralnet;
 
 public class PropParameter {
     //RankNet
-    public int current = -1;//index of current data point in the ranked list
-    public int[][] pairMap = null;
+    protected int current = -1;//index of current data point in the ranked list
+    protected int[][] pairMap = null;
 
     public PropParameter(final int current, final int[][] pairMap) {
         this.current = current;
@@ -20,8 +20,8 @@ public class PropParameter {
     }
 
     //LambdaRank: RankNet + the following
-    public float[][] pairWeight = null;
-    public float[][] targetValue = null;
+    protected float[][] pairWeight = null;
+    protected float[][] targetValue = null;
 
     public PropParameter(final int current, final int[][] pairMap, final float[][] pairWeight, final float[][] targetValue) {
         this.current = current;
@@ -31,7 +31,7 @@ public class PropParameter {
     }
 
     //ListNet
-    public float[] labels = null;//relevance label
+    protected float[] labels = null;//relevance label
 
     public PropParameter(final float[] labels) {
         this.labels = labels;

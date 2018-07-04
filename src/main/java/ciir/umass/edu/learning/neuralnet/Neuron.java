@@ -95,9 +95,6 @@ public class Neuron {
      * @param param
      */
     public void computeDelta(final PropParameter param) {
-        /*double pij = (double) (1.0 / (1.0 + Math.exp(-(prev_output-output))));
-        prev_delta = (targetValue-pij) * tfunc.computeDerivative(prev_output);
-        delta =      (targetValue-pij) * tfunc.computeDerivative(output);*/
         final int[][] pairMap = param.pairMap;
         final int current = param.current;
 
@@ -129,15 +126,6 @@ public class Neuron {
      * Update delta from neurons in the next layer (back-propagate)
      */
     public void updateDelta(final PropParameter param) {
-        /*double errorSum = 0.0;
-        Synapse s = null;
-        for(int i=0;i<outLinks.size();i++)
-        {
-        	s = outLinks.get(i);
-        	errorSum += (s.getTarget().getPrevDelta()-s.getTarget().getDelta()) * s.getWeight();
-        }
-        prev_delta = errorSum * tfunc.computeDerivative(prev_output);
-        delta =      errorSum * tfunc.computeDerivative(output);*/
         final int[][] pairMap = param.pairMap;
         final float[][] pairWeight = param.pairWeight;
         final int current = param.current;

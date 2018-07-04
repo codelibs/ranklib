@@ -77,8 +77,6 @@ public class ListNet extends RankNet {
             }
             error += err / rl.size();
         }
-        //if(error > lastError && Neuron.learningRate > 0.0000001)
-        //Neuron.learningRate *= 0.9;
         lastError = error;
     }
 
@@ -110,20 +108,20 @@ public class ListNet extends RankNet {
                 backPropagate(labels);
                 clearNeuronOutputs();
             }
-            //estimateLoss();
-            printLog(new int[] { 7, 14 }, new String[] { i + "", SimpleMath.round(error, 6) + "" });
+            printLog(new int[] { 7, 14 }, new String[] { Integer.toString(i) , Double.toString(SimpleMath.round(error, 6)) });
             if (i % 1 == 0) {
                 scoreOnTrainingData = scorer.score(rank(samples));
-                printLog(new int[] { 9 }, new String[] { SimpleMath.round(scoreOnTrainingData, 4) + "" });
+                printLog(new int[] { 9 }, new String[] {Double.toString(SimpleMath.round(scoreOnTrainingData, 4)) });
                 if (validationSamples != null) {
                     final double score = scorer.score(rank(validationSamples));
                     if (score > bestScoreOnValidationData) {
                         bestScoreOnValidationData = score;
                         saveBestModelOnValidation();
                     }
-                    printLog(new int[] { 9 }, new String[] { SimpleMath.round(score, 4) + "" });
+                    printLog(new int[] { 9 }, new String[] { Double.toString(SimpleMath.round(score, 4)) });
                 }
             }
+            flushLog();
         }
 
         //if validation data is specified ==> best model on this data has been saved
@@ -158,34 +156,32 @@ public class ListNet extends RankNet {
 
     @Override
     public String model() {
-        String output = "## " + name() + "\n";
-        output += "## Epochs = " + nIteration + "\n";
-        output += "## No. of features = " + features.length + "\n";
+        final StringBuilder output = new StringBuilder();
+        output.append("## " + name() + "\n");
+        output.append("## Epochs = " + nIteration + "\n");
+        output.append("## No. of features = " + features.length + "\n");
 
         //print used features
         for (int i = 0; i < features.length; i++) {
-            output += features[i] + ((i == features.length - 1) ? "" : " ");
+            output.append(features[i] + ((i == features.length - 1) ? "" : " "));
         }
-        output += "\n";
+        output.append("\n");
         //print network information
-        output += "0\n";//[# hidden layers, *ALWAYS* 0 since we're using linear net]
+        output.append("0\n");//[# hidden layers, *ALWAYS* 0 since we're using linear net]
         //print learned weights
-        output += toString();
-        return output;
+        output.append(toString());
+        return output.toString();
     }
 
     @Override
     public void loadFromString(final String fullText) {
         try (final BufferedReader in = new BufferedReader(new StringReader(fullText))) {
-            String content = "";
+            String content = null;
 
             final List<String> l = new ArrayList<>();
             while ((content = in.readLine()) != null) {
                 content = content.trim();
-                if (content.length() == 0) {
-                    continue;
-                }
-                if (content.indexOf("##") == 0) {
+                if (content.length() == 0 || content.indexOf("##") == 0) {
                     continue;
                 }
                 l.add(content);

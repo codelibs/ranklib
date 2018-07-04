@@ -111,7 +111,6 @@ public class LambdaRank extends RankNet {
                 for (int l = k + 1; l < rl.size(); l++) {
                     if (rl.get(k).getLabel() > rl.get(l).getLabel()) {
                         final double o2 = eval(rl.get(l));
-                        //error += crossEntropy(o1, o2, 1.0f);
                         if (o1 < o2) {
                             misorderedPairs++;
                         }
@@ -121,7 +120,6 @@ public class LambdaRank extends RankNet {
         }
         error = 1.0 - scoreOnTrainingData;
         if (error > lastError) {
-            //Neuron.learningRate *= 0.8;
             straightLoss++;
         } else {
             straightLoss = 0;

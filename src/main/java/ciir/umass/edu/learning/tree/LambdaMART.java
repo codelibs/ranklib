@@ -174,7 +174,7 @@ public class LambdaMART extends Ranker {
 
         //Start the gradient boosting process
         for (int m = 0; m < nTrees; m++) {
-            printLog(new int[] { 7 }, new String[] { (m + 1) + "" });
+            printLog(new int[] { 7 }, new String[] { Integer.toString(m + 1) });
 
             //Compute lambdas (which act as the "pseudo responses")
             //Create training instances for MART:
@@ -218,7 +218,7 @@ public class LambdaMART extends Ranker {
             //However, this function is more efficient since it uses the cached outputs of the model (as opposed to re-evaluating the model
             //on the entire training set).
 
-            printLog(new int[] { 9 }, new String[] { SimpleMath.round(scoreOnTrainingData, 4) + "" });
+            printLog(new int[] { 9 }, new String[] { Double.toString(SimpleMath.round(scoreOnTrainingData, 4)) });
 
             //Evaluate the current model on the validation data (if available)
             if (validationSamples != null) {
@@ -232,7 +232,7 @@ public class LambdaMART extends Ranker {
                 //again, equivalent to scoreOnValidation=scorer.score(rank(validationSamples)), but more efficient since we use the cached models' outputs
                 final double score = computeModelScoreOnValidation();
 
-                printLog(new int[] { 9 }, new String[] { SimpleMath.round(score, 4) + "" });
+                printLog(new int[] { 9 }, new String[] { Double.toString(SimpleMath.round(score, 4)) });
                 if (score > bestScoreOnValidationData) {
                     bestScoreOnValidationData = score;
                     bestModelOnValidation = ensemble.treeCount() - 1;
@@ -284,15 +284,16 @@ public class LambdaMART extends Ranker {
 
     @Override
     public String model() {
-        String output = "## " + name() + "\n";
-        output += "## No. of trees = " + nTrees + "\n";
-        output += "## No. of leaves = " + nTreeLeaves + "\n";
-        output += "## No. of threshold candidates = " + nThreshold + "\n";
-        output += "## Learning rate = " + learningRate + "\n";
-        output += "## Stop early = " + nRoundToStopEarly + "\n";
-        output += "\n";
-        output += toString();
-        return output;
+        final StringBuilder output = new StringBuilder();
+        output.append("## " + name() + "\n");
+        output.append("## No. of trees = " + nTrees + "\n");
+        output.append("## No. of leaves = " + nTreeLeaves + "\n");
+        output.append("## No. of threshold candidates = " + nThreshold + "\n");
+        output.append("## Learning rate = " + learningRate + "\n");
+        output.append("## Stop early = " + nRoundToStopEarly + "\n");
+        output .append("\n");
+        output.append(toString());
+        return output.toString();
     }
 
     @Override
@@ -451,7 +452,7 @@ public class LambdaMART extends Ranker {
         		Worker wk = new Worker(this, partition[i], partition[i+1]-1, current);
         		workers.add(wk);//keep it so we can get back results from it later on
         		p.execute(wk);
-        
+
         		if(i < partition.length-2)
         			for(int j=partition[i]; j<=partition[i+1]-1;j++)
         				current += samples.get(j).size();

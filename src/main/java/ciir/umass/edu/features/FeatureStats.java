@@ -48,12 +48,7 @@ public class FeatureStats {
             while ((line = br.readLine()) != null) {
                 line = line.trim().toLowerCase();
 
-                if (line.length() == 0) {
-                    continue;
-                }
-
-                //- Not interested in model comments
-                else if (line.contains("##")) {
+                if (line.length() == 0 || line.contains("##")) {
                     continue;
                 }
 
@@ -77,7 +72,6 @@ public class FeatureStats {
                 }
             } //- end while reading
 
-            //br.close ();
         } //- end try
         catch (final Exception ex) {
             throw RankLibError.create("Exception: " + ex.toString(), ex);

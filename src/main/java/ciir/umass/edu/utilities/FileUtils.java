@@ -68,7 +68,7 @@ public class FileUtils {
     public static List<String> readLine(final String filename, final String encoding) {
         final List<String> lines = new ArrayList<>();
         try (final BufferedReader in = smartReader(filename, encoding)) {
-            String content = "";
+            String content = null;
 
             while ((content = in.readLine()) != null) {
                 content = content.trim();
@@ -167,31 +167,31 @@ public class FileUtils {
 
     /**
      * Gunzip an input file.
-     * @param file_input    Input file to gunzip.
-     * @param dir_output    Output directory to contain the ungzipped file (whose name = file_input - ".gz")
+     * @param fileInput    Input file to gunzip.
+     * @param dirOutput    Output directory to contain the ungzipped file (whose name = file_input - ".gz")
      * @return 1 if succeed
      */
-    public static int gunzipFile(final File file_input, final File dir_output) {
+    public static int gunzipFile(final File fileInput, final File dirOutput) {
         // Use the name of the archive for the output file name but
         // with ".gz" stripped off.
-        final String file_input_name = file_input.getName();
-        final String file_output_name = file_input_name.substring(0, file_input_name.length() - 3);
+        final String fileInputName = fileInput.getName();
+        final String fileOutputName = fileInputName.substring(0, fileInputName.length() - 3);
 
         // Create the decompressed output file.
-        final File output_file = new File(dir_output, file_output_name);
+        final File outputFile = new File(dirOutput, fileOutputName);
 
         // Decompress the gzipped file by reading it via
         // the GZIP input stream. Will need a buffer.
-        final byte[] input_buffer = new byte[BUF_SIZE];
+        final byte[] inputBuffer = new byte[BUF_SIZE];
         int len = 0;
 
-        try (GZIPInputStream gzip_in_stream = new GZIPInputStream(new BufferedInputStream(new FileInputStream(file_input)));
-                BufferedOutputStream destination = new BufferedOutputStream(new FileOutputStream(output_file), BUF_SIZE)) {
+        try (GZIPInputStream gin = new GZIPInputStream(new BufferedInputStream(new FileInputStream(fileInput)));
+                BufferedOutputStream destination = new BufferedOutputStream(new FileOutputStream(outputFile), BUF_SIZE)) {
 
             //Now read from the gzip stream, which will decompress the data,
             //and write to the output stream.
-            while ((len = gzip_in_stream.read(input_buffer, 0, BUF_SIZE)) != -1) {
-                destination.write(input_buffer, 0, len);
+            while ((len = gin.read(inputBuffer, 0, BUF_SIZE)) != -1) {
+                destination.write(inputBuffer, 0, len);
             }
             destination.flush(); // Insure that all data is written to the output.
 
@@ -235,13 +235,10 @@ public class FileUtils {
     }
 
     public static String makePathStandard(final String directory) {
-        String dir = directory;
+        final String dir = directory;
         final char c = dir.charAt(dir.length() - 1);
         if (c != '/' && c != '\\') {
-            //- I THINK we want File.separator (/ or \) instead of
-            //  File.pathSeparator (: or ;) here.  Maybe needed for Analyzer?
-            //dir += File.pathSeparator;
-            dir += File.separator;
+            return dir + File.separator;
         }
         return dir;
     }

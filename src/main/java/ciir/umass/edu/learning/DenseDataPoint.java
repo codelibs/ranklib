@@ -41,8 +41,6 @@ public class DenseDataPoint extends DataPoint {
 
     @Override
     public void setFeatureVector(final float[] dfVals) {
-        //fVals = new float[dfVals.length];
-        //System.arraycopy(dfVals, 0, fVals, 0, dfVals.length);
         fVals = dfVals;
     }
 

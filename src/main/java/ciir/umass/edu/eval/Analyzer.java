@@ -46,7 +46,6 @@ public class Analyzer {
 
         final Analyzer a = new Analyzer();
         a.compare(directory, baseline);
-        //a.compare("output/", "ca.feature.base");
     }
 
     static class Result {
@@ -98,7 +97,6 @@ public class Analyzer {
                 }
                 content = content.replace(" ", "\t");
                 final String[] s = content.split("\t");
-                //String measure = s[0];
                 final String id = s[1];
                 final double p = Double.parseDouble(s[2]);
                 performance.put(id, p);

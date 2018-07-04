@@ -28,15 +28,8 @@ public class SparseDataPoint extends DataPoint {
 
     private static accessPattern searchPattern = accessPattern.RANDOM;
 
-    // Profiling variables
-    // private static int numCalls = 0;
-    // private static float avgTime = 0;
-
     // The feature ids for known values
     int fIds[];
-
-    // The feature values for corresponding Ids
-    //float fVals[]; //moved to the parent class
 
     // Internal search optimizers. Currently unused.
     int lastMinId = -1;
@@ -87,7 +80,6 @@ public class SparseDataPoint extends DataPoint {
 
     @Override
     public float getFeatureValue(final int fid) {
-        //long time = System.nanoTime();
         if (fid <= 0 || fid > getFeatureCount()) {
             if (missingZero) {
                 return 0f;
@@ -95,9 +87,6 @@ public class SparseDataPoint extends DataPoint {
             throw RankLibError.create("Error in SparseDataPoint::getFeatureValue(): requesting unspecified feature, fid=" + fid);
         }
         final int pos = locate(fid);
-        //long completedIn = System.nanoTime() - time;
-        //avgTime = (avgTime*numCalls + completedIn)/(++numCalls);
-        //logger.info(()->"getFeatureValue average time: "+avgTime);
         if (pos >= 0) {
             return fVals[pos];
         }

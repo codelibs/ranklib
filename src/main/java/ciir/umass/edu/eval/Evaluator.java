@@ -114,7 +114,6 @@ public class Evaluator {
             logger.info(
                     () -> "\t[ -feature <file> ]\tFeature description file: list features to be considered by the learner, each on a separate line");
             logger.info(() -> "\t\t\t\tIf not specified, all features will be used.");
-            //logger.info(()->"\t[ -metric2t <metric> ]\tMetric to optimize on the training data. Supported: MAP, NDCG@k, DCG@k, P@k, RR@k, BEST@k, ERR@k (default=" + trainMetric + ")");
             logger.info(() -> "\t[ -metric2t <metric> ]\tMetric to optimize on the training data.  "
                     + "Supported: MAP, NDCG@k, DCG@k, P@k, RR@k, ERR@k (default=ERR@10)");
             logger.info(() -> "\t[ -gmax <label> ]\tHighest judged relevance label. It affects the calculation of ERR " + "(default="
@@ -123,7 +122,6 @@ public class Evaluator {
             logger.info(() -> "\t[ -silent ]\t\tDo not print progress messages (which are printed by default)");
             logger.info(() -> "\t[ -missingZero ]\tSubstitute zero for missing feature values rather than throwing an exception.");
 
-            //logger.info(()->"        Use the entire specified training data");
             logger.info(
                     () -> "\t[ -validate <file> ]\tSpecify if you want to tune your system on the validation data (default=unspecified)");
             logger.info(() -> "\t\t\t\tIf specified, the final model will be the one that performs best on the validation data");
@@ -142,14 +140,9 @@ public class Evaluator {
             logger.info(() -> "\t\t\t\tzscore: normalize each feature by its mean/standard deviation");
             logger.info(() -> "\t\t\t\tlinear: normalize each feature by its min/max values");
 
-            //logger.info(()->"\t[ -sparse ]\t\tUse sparse representation for all feature vectors (default=dense)");
-
             logger.info(
                     () -> "\t[ -kcv <k> ]\t\tSpecify if you want to perform k-fold cross validation using the specified training data (default=NoCV)");
             logger.info(() -> "\t\t\t\t-tvs can be used to further reserve a portion of the training data in each fold for validation");
-            //logger.info(()->"\t\t\t\tData for each fold is created from sequential partitions of the training data.");
-            //logger.info(()->"\t\t\t\tRandomized partitioning can be done by shuffling the training data in advance.");
-            //logger.info(()->"\t\t\t\tType \"java -cp bin/RankLib.jar ciir.umass.edu.feature.FeatureManager\" for help with shuffling.");
 
             logger.info(() -> "\t[ -kcvmd <dir> ]\tDirectory for models trained via cross-validation (default=not-save)");
             logger.info(
@@ -230,7 +223,6 @@ public class Evaluator {
             logger.info(
                     () -> "\t[ -idv <file> ]\t\tSave model performance (in test metric) on individual ranked lists (has to be used with -test)");
             logger.info(() -> "\t[ -norm ]\t\tNormalize feature vectors (similar to -norm for training/tuning)");
-            //logger.info(()->"\t[ -sparse ]\t\tUse sparse representation for all feature vectors (default=dense)");
 
             return;
         }
@@ -384,14 +376,14 @@ public class Evaluator {
         }
         MyThreadPool.init(nThread);
 
-        if (testMetric.compareTo("") == 0) {
+        if (testMetric.isEmpty()) {
             testMetric = trainMetric;
         }
 
         logger.info(() -> (keepOrigFeatures) ? "Keep orig. features" : "Discard orig. features");
         final Evaluator e = new Evaluator(rType2[rankerType], trainMetric, testMetric);
 
-        if (trainFile.compareTo("") != 0) {
+        if (!trainFile.isEmpty()) {
             if (logger.isLoggable(Level.INFO)) {
                 logger.info("Training data:\t" + trainFile);
             }
@@ -407,7 +399,7 @@ public class Evaluator {
                     }
                 }
             } else {
-                if (testFile.compareTo("") != 0) {
+                if (!testFile.isEmpty()) {
                     if (logger.isLoggable(Level.INFO)) {
                         logger.info("Test data:\t" + testFile);
                     }
@@ -417,7 +409,7 @@ public class Evaluator {
                     }
                 }
 
-                if (validationFile.compareTo("") != 0) {
+                if (!validationFile.isEmpty()) {
                     if (logger.isLoggable(Level.INFO)) {
                         logger.info("Validation data:\t" + validationFile);
                     }
@@ -431,7 +423,7 @@ public class Evaluator {
             if (logger.isLoggable(Level.INFO)) {
                 logger.info("Ranking method:\t" + rType[rankerType]);
             }
-            if (featureDescriptionFile.compareTo("") != 0) {
+            if (!featureDescriptionFile.isEmpty()) {
                 if (logger.isLoggable(Level.INFO)) {
                     logger.info("Feature description file:\t" + featureDescriptionFile);
                 }
@@ -446,26 +438,25 @@ public class Evaluator {
             if (trainMetric.toUpperCase().startsWith("ERR") || testMetric.toUpperCase().startsWith("ERR")) {
                 logger.info(() -> "Highest relevance label (to compute ERR): " + (int) SimpleMath.logBase2(ERRScorer.MAX));
             }
-            if (qrelFile.compareTo("") != 0) {
+            if (!qrelFile.isEmpty()) {
                 logger.info(() -> "TREC-format relevance judgment (only affects MAP and NDCG scores): " + qrelFile);
             }
             logger.info(() -> "Feature normalization: " + ((Evaluator.normalize) ? Evaluator.nml.name() : "No"));
 
-            if (kcvModelDir.compareTo("") != 0) {
+            if (!kcvModelDir.isEmpty()) {
                 if (logger.isLoggable(Level.INFO)) {
                     logger.info("Models directory: " + kcvModelDir);
                 }
             }
 
-            if (kcvModelFile.compareTo("") != 0) {
+            if (!kcvModelFile.isEmpty()) {
                 if (logger.isLoggable(Level.INFO)) {
                     logger.info("Models' name: " + kcvModelFile);
                 }
             }
 
-            if (modelFile.compareTo("") != 0) {
+            if (!modelFile.isEmpty()) {
                 logger.info(() -> "Model file: " + modelFile);
-                //logger.info(()->"#threads:\t" + nThread);
             }
 
             if (logger.isLoggable(Level.INFO)) {
@@ -477,15 +468,12 @@ public class Evaluator {
 
             //starting to do some work
             if (foldCV != -1) {
-                //if(kcvModelDir.compareTo("") != 0 && kcvModelFile.compareTo("") == 0)
-                //	kcvModelFile = "default";
-                //
                 //- Behavioral changes: Write kcv models if kcvmd OR kcvmn defined.  Use
                 //  default names for missing arguments: "kcvmodels" default directory
                 //  and "kcv" default model name.
-                if (kcvModelDir.compareTo("") != 0 && kcvModelFile.compareTo("") == 0) {
+                if (!kcvModelDir.isEmpty() && kcvModelFile.isEmpty()) {
                     kcvModelFile = "kcv";
-                } else if (kcvModelDir.compareTo("") == 0 && kcvModelFile.compareTo("") != 0) {
+                } else if (kcvModelDir.isEmpty() && !kcvModelFile.isEmpty()) {
                     kcvModelDir = "kcvmodels";
                 }
 
@@ -507,14 +495,14 @@ public class Evaluator {
                 logger.info("Model file:\t" + savedModelFile);
             }
             logger.info(() -> "Feature normalization: " + ((Evaluator.normalize) ? Evaluator.nml.name() : "No"));
-            if (rankFile.compareTo("") != 0) {
-                if (scoreFile.compareTo("") != 0) {
+            if (!rankFile.isEmpty()) {
+                if (!scoreFile.isEmpty()) {
                     if (savedModelFiles.size() > 1) {
                         e.score(savedModelFiles, rankFile, scoreFile);
                     } else {
                         e.score(savedModelFile, rankFile, scoreFile);
                     }
-                } else if (indriRankingFile.compareTo("") != 0) {
+                } else if (!indriRankingFile.isEmpty()) {
                     if (savedModelFiles.size() > 1) {
                         e.rank(savedModelFiles, rankFile, indriRankingFile);
                     } else if (savedModelFiles.size() == 1) {
@@ -528,7 +516,6 @@ public class Evaluator {
                     throw RankLibError
                             .create("This function has been removed.\n" + "Consider using -score in addition to your current parameters, "
                                     + "and do the ranking yourself based on these scores.");
-                    //e.rank(savedModelFile, rankFile);
                 }
             } else {
                 if (logger.isLoggable(Level.INFO)) {
@@ -538,7 +525,7 @@ public class Evaluator {
                     logger.info(() -> "Highest relevance label (to compute ERR): " + (int) SimpleMath.logBase2(ERRScorer.MAX));
                 }
 
-                if (savedModelFile.compareTo("") != 0) {
+                if (!savedModelFile.isEmpty()) {
                     if (savedModelFiles.size() > 1)//models trained via cross-validation
                     {
                         if (testFiles.size() > 1) {
@@ -549,7 +536,7 @@ public class Evaluator {
                     } else if (savedModelFiles.size() == 1) {
                         e.test(savedModelFile, testFile, prpFile);
                     }
-                } else if (scoreFile.compareTo("") != 0) {
+                } else if (!scoreFile.isEmpty()) {
                     e.testWithScoreFile(testFile, scoreFile);
                     //It will evaluate the input ranking (without being re-ranked by any model) using any measure specified via metric2T
                 } else {
@@ -590,7 +577,7 @@ public class Evaluator {
         this.type = rType;
         trainScorer = mFact.createScorer(trainMetric);
         testScorer = mFact.createScorer(testMetric);
-        if (qrelFile.compareTo("") != 0) {
+        if (!qrelFile.isEmpty()) {
             trainScorer.loadExternalRelevanceJudgment(qrelFile);
             testScorer.loadExternalRelevanceJudgment(qrelFile);
         }
@@ -600,7 +587,7 @@ public class Evaluator {
         this.type = rType;
         trainScorer = mFact.createScorer(trainMetric, trainK);
         testScorer = mFact.createScorer(testMetric, testK);
-        if (qrelFile.compareTo("") != 0) {
+        if (!qrelFile.isEmpty()) {
             trainScorer.loadExternalRelevanceJudgment(qrelFile);
             testScorer.loadExternalRelevanceJudgment(qrelFile);
         }
@@ -610,7 +597,7 @@ public class Evaluator {
         this.type = rType;
         trainScorer = mFact.createScorer(trainMetric, k);
         testScorer = mFact.createScorer(testMetric, k);
-        if (qrelFile.compareTo("") != 0) {
+        if (!qrelFile.isEmpty()) {
             trainScorer.loadExternalRelevanceJudgment(qrelFile);
             testScorer.loadExternalRelevanceJudgment(qrelFile);
         }
@@ -619,7 +606,7 @@ public class Evaluator {
     public Evaluator(final RankerType rType, final METRIC metric, final int k) {
         this.type = rType;
         trainScorer = mFact.createScorer(metric, k);
-        if (qrelFile.compareTo("") != 0) {
+        if (!qrelFile.isEmpty()) {
             trainScorer.loadExternalRelevanceJudgment(qrelFile);
         }
         testScorer = trainScorer;
@@ -629,7 +616,7 @@ public class Evaluator {
         this.type = rType;
         trainScorer = mFact.createScorer(trainMetric);
         testScorer = mFact.createScorer(testMetric);
-        if (qrelFile.compareTo("") != 0) {
+        if (!qrelFile.isEmpty()) {
             trainScorer.loadExternalRelevanceJudgment(qrelFile);
             testScorer.loadExternalRelevanceJudgment(qrelFile);
         }
@@ -658,7 +645,6 @@ public class Evaluator {
     }
 
     public int[] readFeature(final String featureDefFile) {
-        //if(featureDefFile.compareTo("") == 0)
         if (featureDefFile.isEmpty()) {
             return null;
         }
@@ -684,13 +670,11 @@ public class Evaluator {
         final List<RankList> train = readInput(trainFile);//read input
 
         List<RankList> validation = null;
-        //if(validationFile.compareTo("")!=0)
         if (!validationFile.isEmpty()) {
             validation = readInput(validationFile);
         }
 
         List<RankList> test = null;
-        //if(testFile.compareTo("")!=0)
         if (!testFile.isEmpty()) {
             test = readInput(testFile);
         }
@@ -717,7 +701,7 @@ public class Evaluator {
             final double rankScore = evaluate(ranker, test);
             logger.info(() -> testScorer.name() + " on test data: " + SimpleMath.round(rankScore, 4));
         }
-        if (modelFile.compareTo("") != 0) {
+        if (!modelFile.isEmpty()) {
             ranker.save(modelFile);
             logger.info(() -> "Model saved to: " + modelFile);
         }
@@ -736,7 +720,6 @@ public class Evaluator {
         final int[] features = prepareSplit(sampleFile, featureDefFile, percentTrain, normalize, trainingData, testData);
         List<RankList> validation = null;
 
-        //if(validationFile.compareTo("") != 0)
         if (!validationFile.isEmpty()) {
             validation = readInput(validationFile);
             if (normalize) {
@@ -750,7 +733,7 @@ public class Evaluator {
         final double rankScore = evaluate(ranker, testData);
 
         logger.info(() -> testScorer.name() + " on test data: " + SimpleMath.round(rankScore, 4));
-        if (modelFile.compareTo("") != 0) {
+        if (!modelFile.isEmpty()) {
             ranker.save(modelFile);
             logger.info(() -> "Model saved to: " + modelFile);
         }
@@ -770,7 +753,6 @@ public class Evaluator {
         final int[] features = prepareSplit(trainFile, featureDefFile, percentTrain, normalize, train, validation);
         List<RankList> test = null;
 
-        //if(testFile.compareTo("") != 0)
         if (!testFile.isEmpty()) {
             test = readInput(testFile);
             if (normalize) {
@@ -785,7 +767,7 @@ public class Evaluator {
             final double rankScore = evaluate(ranker, test);
             logger.info(() -> testScorer.name() + " on test data: " + SimpleMath.round(rankScore, 4));
         }
-        if (modelFile.compareTo("") != 0) {
+        if (!modelFile.isEmpty()) {
             ranker.save(modelFile);
             logger.info(() -> "Model saved to: " + modelFile);
         }
@@ -820,7 +802,6 @@ public class Evaluator {
         final List<List<RankList>> testData = new ArrayList<>();
 
         //read all samples
-        //List<RankList> samples = FeatureManager.readInput(sampleFile);
         final List<RankList> samples = readInput(sampleFile);
 
         //get features
@@ -871,7 +852,6 @@ public class Evaluator {
             scores[i][0] = ranker.getScoreOnTrainingData();
             scores[i][1] = s2;
 
-            //if(modelDir.compareTo("") != 0)
             if (!modelDir.isEmpty()) {
                 ranker.save(FileUtils.makePathStandard(modelDir) + "f" + (i + 1) + "." + modelFile);
                 if (logger.isLoggable(Level.INFO)) {
@@ -920,7 +900,6 @@ public class Evaluator {
             logger.info(testScorer.name() + " on test data: " + SimpleMath.round(rankScore, 4));
         }
 
-        //if(prpFile.compareTo("") != 0)
         if (!prpFile.isEmpty()) {
             savePerRankListPerformanceFile(ids, scores, prpFile);
             logger.info(() -> "Per-ranked list performance saved to: " + prpFile);
@@ -977,7 +956,6 @@ public class Evaluator {
 
         //read all samples
         final int nFold = modelFiles.size();
-        //List<RankList> samples = FeatureManager.readInput(testFile);
         final List<RankList> samples = readInput(testFile);
 
         logger.info(() -> "Preparing " + nFold + "-fold test data... ");
@@ -1066,7 +1044,7 @@ public class Evaluator {
             final List<Double> scores = new ArrayList<>();
             while ((content = in.readLine()) != null) {
                 content = content.trim();
-                if (content.compareTo("") == 0) {
+                if (content.isEmpty()) {
                     continue;
                 }
                 scores.add(Double.parseDouble(content));
@@ -1128,7 +1106,6 @@ public class Evaluator {
 
         //read all samples
         final int nFold = modelFiles.size();
-        //List<RankList> samples = FeatureManager.readInput(testFile);
         final List<RankList> samples = readInput(testFile);
         logger.info(() -> "Preparing " + nFold + "-fold test data... ");
         FeatureManager.prepareCV(samples, nFold, trainingData, testData);

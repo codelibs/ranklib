@@ -299,7 +299,7 @@ public class RankBoost extends Ranker {
             printLog(new int[] { 7, 8, 9, 9 }, new String[] { Integer.toString(t), Integer.toString(wr.getFid()),
                     Double.toString(SimpleMath.round(wr.getThreshold(), 4)), Double.toString(SimpleMath.round(R_t, 4)) });
             if (t % 1 == 0) {
-                printLog(new int[] { 9 }, new String[] { SimpleMath.round(scorer.score(rank(samples)), 4) + "" });
+                printLog(new int[] { 9 }, new String[] { Double.toString(SimpleMath.round(scorer.score(rank(samples)), 4)) });
                 if (validationSamples != null) {
                     final double score = scorer.score(rank(validationSamples));
                     if (score > bestScoreOnValidationData) {
@@ -309,9 +309,10 @@ public class RankBoost extends Ranker {
                         bestModelWeights.clear();
                         bestModelWeights.addAll(rWeight);
                     }
-                    printLog(new int[] { 9 }, new String[] { SimpleMath.round(score, 4) + "" });
+                    printLog(new int[] { 9 }, new String[] { Double.toString(SimpleMath.round(score, 4)) });
                 }
             }
+            flushLog();
 
             //logger.info(()->"Z_t = " + Z + "\tr = " + current_r + "\t" + Math.sqrt(1.0 - current_r*current_r));
             //normalize sweight to make sure it is a valid distribution
@@ -360,36 +361,38 @@ public class RankBoost extends Ranker {
 
     @Override
     public String toString() {
-        String output = "";
+        final StringBuilder output = new StringBuilder();
         for (int i = 0; i < wRankers.size(); i++) {
-            output += wRankers.get(i).toString() + ":" + rWeight.get(i) + ((i == rWeight.size() - 1) ? "" : " ");
+            output.append(wRankers.get(i).toString() + ":" + rWeight.get(i) + ((i == rWeight.size() - 1) ? "" : " "));
         }
-        return output;
+        return output.toString();
     }
 
     @Override
     public String model() {
-        String output = "## " + name() + "\n";
-        output += "## Iteration = " + nIteration + "\n";
-        output += "## No. of threshold candidates = " + nThreshold + "\n";
-        output += toString();
-        return output;
+        final StringBuilder output = new StringBuilder();
+        output.append("## " + name() + "\n");
+        output.append("## Iteration = " + nIteration + "\n");
+        output.append("## No. of threshold candidates = " + nThreshold + "\n");
+        output.append(toString());
+        return output.toString();
     }
 
     @Override
     public void loadFromString(final String fullText) {
         try (final BufferedReader in = new BufferedReader(new StringReader(fullText))) {
-            String content = "";
+            String content = null;
 
             while ((content = in.readLine()) != null) {
                 content = content.trim();
-                if (content.length() == 0) {
-                    continue;
-                }
-                if (content.indexOf("##") == 0) {
+                if (content.length() == 0 || content.indexOf("##") == 0) {
                     continue;
                 }
                 break;
+            }
+
+            if (content == null) {
+                throw RankLibError.create("Model name is not found.");
             }
 
             rWeight = new ArrayList<>();
@@ -403,7 +406,7 @@ public class RankBoost extends Ranker {
             final String[] fs = content.split(" ");
             for (int i = 0; i < fs.length; i++) {
                 fs[i] = fs[i].trim();
-                if (fs[i].compareTo("") == 0) {
+                if (fs[i].isEmpty()) {
                     continue;
                 }
                 final String[] strs = fs[i].split(":");

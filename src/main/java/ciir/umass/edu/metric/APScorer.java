@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import ciir.umass.edu.learning.RankList;
@@ -29,7 +30,7 @@ public class APScorer extends MetricScorer {
     //This class computes MAP from the *WHOLE* ranked list. "K" will be completely ignored.
     //The reason is, if you want MAP@10, you really should be using NDCG@10 or ERR@10 instead.
 
-    public HashMap<String, Integer> relDocCount = null;
+    protected Map<String, Integer> relDocCount = null;
 
     public APScorer() {
         this.k = 0;//consider the whole list
@@ -52,7 +53,6 @@ public class APScorer extends MetricScorer {
                 }
                 final String[] s = content.split(" ");
                 final String qid = s[0].trim();
-                //String docid = s[2].trim();
                 final int label = (int) Math.rint(Double.parseDouble(s[3].trim()));
                 if (label > 0) {
                     final int prev = relDocCount.getOrDefault(qid, 0);

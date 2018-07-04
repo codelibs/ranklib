@@ -43,9 +43,7 @@ public class LinearNormalizer extends Normalizer {
 
         final float[] min = new float[fids.length];
         final float[] max = new float[fids.length];
-        //Arrays.fill(min, 0);
         Arrays.fill(min, Float.MAX_VALUE);
-        //Arrays.fill(max, 0);
         Arrays.fill(max, Float.MIN_VALUE);
 
         for (int i = 0; i < rl.size(); i++) {

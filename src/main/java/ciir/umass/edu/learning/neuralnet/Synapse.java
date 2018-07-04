@@ -26,7 +26,6 @@ public class Synapse {
         this.target = target;
         this.source.getOutLinks().add(this);
         this.target.getInLinks().add(this);
-        //weight = random.nextDouble()/5;
         weight = (random.nextInt(2) == 0 ? 1 : -1) * random.nextFloat() / 10;
     }
 
