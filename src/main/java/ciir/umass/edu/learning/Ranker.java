@@ -95,7 +95,7 @@ public abstract class Ranker {
     }
 
     public List<RankList> rank(final List<RankList> l) {
-        final List<RankList> ll = new ArrayList<>();
+        final List<RankList> ll = new ArrayList<>(l.size());
         for (int i = 0; i < l.size(); i++) {
             ll.add(rank(l.get(i)));
         }
