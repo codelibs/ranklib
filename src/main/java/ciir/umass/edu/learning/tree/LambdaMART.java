@@ -170,7 +170,11 @@ public class LambdaMART extends Ranker {
         ensemble = new Ensemble();
 
         logger.info(() -> "Training starts...");
-        printLogLn(new int[] { 7, 9, 9 }, new String[] { "#iter", scorer.name() + "-T", scorer.name() + "-V" });
+        if (validationSamples != null) {
+            printLogLn(new int[] { 7, 9, 9 }, new String[] { "#iter", scorer.name() + "-T", scorer.name() + "-V" });
+        } else {
+            printLogLn(new int[] { 7, 9 }, new String[] { "#iter", scorer.name() + "-T" });
+        }
 
         //Start the gradient boosting process
         for (int m = 0; m < nTrees; m++) {

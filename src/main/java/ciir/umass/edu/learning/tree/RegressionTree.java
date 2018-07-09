@@ -9,7 +9,7 @@
 
 package ciir.umass.edu.learning.tree;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import ciir.umass.edu.learning.DataPoint;
@@ -56,7 +56,7 @@ public class RegressionTree {
      * Fit the tree from the specified training data
      */
     public void fit() {
-        final List<Split> queue = new ArrayList<>();
+        final List<Split> queue = new LinkedList<>();
         root = new Split(index, hist, Float.MAX_VALUE, 0);
         root.setRoot(true);
 

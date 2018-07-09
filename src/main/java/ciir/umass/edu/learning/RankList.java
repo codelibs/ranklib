@@ -102,4 +102,13 @@ public class RankList {
     public int getFeatureCount() {
         return featureCount;
     }
+
+    @Override
+    public String toString() {
+        int size = 0;
+        if (rl != null) {
+            size = rl.length;
+        }
+        return "RankList (" + size + ", " + featureCount + ")";
+    }
 }

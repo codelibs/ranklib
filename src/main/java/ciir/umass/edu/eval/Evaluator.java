@@ -385,7 +385,7 @@ public class Evaluator {
 
         if (!trainFile.isEmpty()) {
             if (logger.isLoggable(Level.INFO)) {
-                logger.info("Training data:\t" + trainFile);
+                logger.info("Training data: " + trainFile);
             }
 
             //print out parameter settings
@@ -401,7 +401,7 @@ public class Evaluator {
             } else {
                 if (!testFile.isEmpty()) {
                     if (logger.isLoggable(Level.INFO)) {
-                        logger.info("Test data:\t" + testFile);
+                        logger.info("Test data: " + testFile);
                     }
                 } else if (ttSplit > 0) {
                     if (logger.isLoggable(Level.INFO)) {
@@ -411,7 +411,7 @@ public class Evaluator {
 
                 if (!validationFile.isEmpty()) {
                     if (logger.isLoggable(Level.INFO)) {
-                        logger.info("Validation data:\t" + validationFile);
+                        logger.info("Validation data: " + validationFile);
                     }
                 } else if (ttSplit <= 0 && tvSplit > 0) {
                     if (logger.isLoggable(Level.INFO)) {
@@ -421,18 +421,18 @@ public class Evaluator {
             }
             logger.info(() -> "Feature vector representation: " + ((useSparseRepresentation) ? "Sparse" : "Dense") + ".");
             if (logger.isLoggable(Level.INFO)) {
-                logger.info("Ranking method:\t" + rType[rankerType]);
+                logger.info("Ranking method: " + rType[rankerType]);
             }
             if (!featureDescriptionFile.isEmpty()) {
                 if (logger.isLoggable(Level.INFO)) {
-                    logger.info("Feature description file:\t" + featureDescriptionFile);
+                    logger.info("Feature description file: " + featureDescriptionFile);
                 }
             } else {
-                logger.info(() -> "Feature description file:\tUnspecified. All features will be used.");
+                logger.info(() -> "Feature description file: Unspecified. All features will be used.");
             }
             if (logger.isLoggable(Level.INFO)) {
-                logger.info("Train metric:\t" + trainMetric);
-                logger.info("Test metric:\t" + testMetric);
+                logger.info("Train metric: " + trainMetric);
+                logger.info("Test metric: " + testMetric);
             }
 
             if (trainMetric.toUpperCase().startsWith("ERR") || testMetric.toUpperCase().startsWith("ERR")) {
@@ -492,7 +492,7 @@ public class Evaluator {
         } else //scenario: test a saved model
         {
             if (logger.isLoggable(Level.INFO)) {
-                logger.info("Model file:\t" + savedModelFile);
+                logger.info("Model file: " + savedModelFile);
             }
             logger.info(() -> "Feature normalization: " + ((Evaluator.normalize) ? Evaluator.nml.name() : "No"));
             if (!rankFile.isEmpty()) {
@@ -519,7 +519,7 @@ public class Evaluator {
                 }
             } else {
                 if (logger.isLoggable(Level.INFO)) {
-                    logger.info("Test metric:\t" + testMetric);
+                    logger.info("Test metric: " + testMetric);
                 }
                 if (testMetric.startsWith("ERR")) {
                     logger.info(() -> "Highest relevance label (to compute ERR): " + (int) SimpleMath.logBase2(ERRScorer.MAX));

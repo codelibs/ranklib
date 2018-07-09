@@ -185,16 +185,16 @@ public class FeatureManager {
      * @return
      */
     public static List<RankList> readInput(final String inputFile, final boolean mustHaveRelDoc, final boolean useSparseRepresentation) {
-        final List<RankList> samples = new ArrayList<>();
+        final List<RankList> samples = new ArrayList<>(1000);
         final int countRL = 0;
         int countEntries = 0;
 
         try (final BufferedReader in = FileUtils.smartReader(inputFile)) {
-            String content = "";
+            String content = null;
 
             String lastID = "";
             boolean hasRel = false;
-            List<DataPoint> rl = new ArrayList<>();
+            List<DataPoint> rl = new ArrayList<>(10000);
 
             while ((content = in.readLine()) != null) {
                 content = content.trim();
@@ -203,7 +203,7 @@ public class FeatureManager {
                 }
 
                 if (countEntries % 10000 == 0) {
-                    logger.info(() -> "\rReading feature file [" + inputFile + "]: " + countRL + "... ");
+                    logger.info(() -> "Reading feature file [" + inputFile + "]: " + countRL + "... ");
                 }
 
                 DataPoint qp = null;
@@ -234,7 +234,7 @@ public class FeatureManager {
                 samples.add(new RankList(rl));
             }
 
-            logger.info(() -> "\rReading feature file [" + inputFile + "]...");
+            logger.info(() -> "Reading feature file [" + inputFile + "]...");
             if (logger.isLoggable(Level.INFO)) {
                 logger.info("(" + samples.size() + " ranked lists, " + countEntries + " entries read)");
             }
