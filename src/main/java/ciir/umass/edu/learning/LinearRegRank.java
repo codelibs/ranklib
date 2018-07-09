@@ -66,16 +66,17 @@ public class LinearRegRank extends Ranker {
         for (int s = 0; s < samples.size(); s++) {
             final RankList rl = samples.get(s);
             for (int i = 0; i < rl.size(); i++) {
-                xTy[nVar - 1] += rl.get(i).getLabel();
+                final DataPoint point = rl.get(i);
+                xTy[nVar - 1] += point.getLabel();
                 for (int j = 0; j < nVar - 1; j++) {
-                    xTy[j] += rl.get(i).getFeatureValue(j + 1) * rl.get(i).getLabel();
+                    xTy[j] += point.getFeatureValue(j + 1) * point.getLabel();
                     for (int k = 0; k < nVar; k++) {
-                        final double t = (k < nVar - 1) ? rl.get(i).getFeatureValue(k + 1) : 1f;
-                        xTx[j][k] += rl.get(i).getFeatureValue(j + 1) * t;
+                        final double t = (k < nVar - 1) ? point.getFeatureValue(k + 1) : 1f;
+                        xTx[j][k] += point.getFeatureValue(j + 1) * t;
                     }
                 }
                 for (int k = 0; k < nVar - 1; k++) {
-                    xTx[nVar - 1][k] += rl.get(i).getFeatureValue(k + 1);
+                    xTx[nVar - 1][k] += point.getFeatureValue(k + 1);
                 }
                 xTx[nVar - 1][nVar - 1] += 1f;
             }
@@ -201,22 +202,18 @@ public class LinearRegRank extends Ranker {
         System.arraycopy(B, 0, b, 0, B.length);
         for (int i = 0; i < a.length; i++) {
             a[i] = new double[A[i].length];
-            if (i > 0) {
-                if (a[i].length != a[i - 1].length) {
-                    throw RankLibError.create("Error: Solving Ax=B: A is NOT a square matrix.");
-                }
+            if (i > 0 && a[i].length != a[i - 1].length) {
+                throw RankLibError.create("Error: Solving Ax=B: A is NOT a square matrix.");
             }
             System.arraycopy(A[i], 0, a[i], 0, A[i].length);
         }
         //apply the gaussian elimination process to convert the matrix A to upper triangular form
-        double pivot = 0.0;
-        double multiplier = 0.0;
         for (int j = 0; j < b.length - 1; j++)//loop through all columns of the matrix A
         {
-            pivot = a[j][j];
+            final double pivot = a[j][j];
             for (int i = j + 1; i < b.length; i++)//loop through all remaining rows
             {
-                multiplier = a[i][j] / pivot;
+                final double multiplier = a[i][j] / pivot;
                 //i-th row = i-th row - (multiplier * j-th row)
                 for (int k = j + 1; k < b.length; k++) {
                     a[i][k] -= a[j][k] * multiplier;
