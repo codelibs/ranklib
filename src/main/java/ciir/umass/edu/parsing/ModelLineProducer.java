@@ -62,7 +62,7 @@ public class ModelLineProducer {
                     }
 
                     // readahead this new line up to the next space
-                    while (charNum <= 32 & i < fullTextChar.length) {
+                    while (charNum <= 32 && i < fullTextChar.length) {
                         charNum = fullTextChar[i];
                         beginOfLineCursor = i;
                         i++;
